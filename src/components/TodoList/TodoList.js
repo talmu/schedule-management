@@ -1,44 +1,111 @@
+import React, { useState} from 'react';
+import {Add, Edit} from '@material-ui/icons';
+import { Fab, List, ListItem, ListItemIcon, ListItemText, Checkbox, ListItemSecondaryAction, IconButton} from '@material-ui/core';
+import AddItemDialog from './AddItemDialog';
+import EditItemDialog from './EditItemDialog';
+import { makeStyles } from '@material-ui/core/styles';
+import { status } from '../../data/data';
 
-import React, {useState} from 'react';
-import { ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Container, Row, Col } from 'reactstrap';
+    const useStyles = makeStyles((theme) => ({
+            root: {
+                width: '100%',
+                maxWidth: 360,
+            },
+            fab: {
+                position: 'absolute',
+                bottom: theme.spacing(2),
+                right: theme.spacing(2),
+            },
+        }));
 
-function TodoList(){   
-    const [tasks, updateTasks] = useState( [ 
-                { id: 1, heading: "Go to the bank", text: "Not Done" }, 
-                { id: 2, heading: "Build BBQ", text: "Not Done" }, 
-                { id: 3, heading: "Make an appointment with Lidor", text: "Not Done" },
-                { id: 4, heading: "Schedule a walk with Michal", text: "Not Done" },
-                { id: 5, heading: "Clean the house", text: "Not Done" },
-                { id: 6, heading: "Clean the house", text: "Not Done" },
-                { id: 7, heading: "Clean the house", text: "Not Done" } ]);
+    function TodoList(props) {
 
-    const handleCheckboxClick = (event) => {
-        const {id, checked} = event.target;
+        const classes = useStyles();
 
-        let newArr = [...tasks];
-        newArr[id-1].text = checked ? "Done" : "Not Done";
-        updateTasks(newArr);
+        const [addOpen, setAddOpen] = useState(false);
+        const [editOpen, setEditOpen] = useState(false);
+        const selected = props.tasks[props.selectedIndex];
+        const [checked, setChecked] = useState([0]);
+        
+        const handleCheckboxClick = (task) => (event) => {
+           
+            const currentIndex = checked.indexOf(task);
+            const newChecked = [...checked];
+            const newTasks = [...props.tasks];
+            newTasks[props.selectedIndex] = selected;
+
+            if (currentIndex === -1) {
+                newChecked.push(task);
+                selected.data[task.id-1].status = status[2];
+            } else {
+                newChecked.splice(currentIndex, 1);
+                selected.data[task.id-1].status = status[0];
+            }            
+            
+            props.updateTasks(newTasks);
+            setChecked(newChecked);
+        }
+
+        const handleAddClick = (newTask) => {
+            const newArr = [...props.tasks];
+            selected.data.push(newTask);
+            newArr[props.selectedIndex] = selected;
+            props.updateTasks(newArr);
+        }
+
+        const handleEditClick = (currentTask => {
+
+        });
+
+        return(
+            <div>
+                <List className={classes.root}>
+                    { props.tasks[props.selectedIndex].data.map( (task) => {
+                        const labelId = `checkbox-list-label-${task.id}`;
+
+                        return(
+                            <ListItem key={task.id} role={undefined} dense button onClick={handleCheckboxClick(task)}>
+                                    <ListItemIcon>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={checked.indexOf(task) !== -1}
+                                            tabIndex={-1}
+                                            disableRipple
+                                            inputProps={{ 'aria-labelledby': labelId }}
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemText className="text-wrap" id={labelId} primary={task.name}></ListItemText>
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge="end" onClick={() => setEditOpen(true)}>
+                                            <Edit/>
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                            </ListItem>
+                        )})}
+                </List>
+                <Fab color="primary" aria-label="add" onClick={() => setAddOpen(true)} className={classes.fab}>
+                    <Add />
+                </Fab>
+
+                 <AddItemDialog 
+                    open={addOpen} 
+                    setOpen={setAddOpen} 
+                    tasks={props.tasks} 
+                    selectedIndex={props.selectedIndex} 
+                    updateTasks={props.updateTasks}
+                    handleAddClick={handleAddClick}>
+                </AddItemDialog>
+
+                <EditItemDialog
+                    open={editOpen} 
+                    setOpen={setEditOpen} 
+                    tasks={props.tasks} 
+                    selectedIndex={props.selectedIndex} 
+                    updateTasks={props.updateTasks}
+                    handleEditClick={handleEditClick}>
+                </EditItemDialog>
+            </div>
+        )
     }
 
-    return(
-        <div className="p-4">
-            <h3>TO DO List</h3>
-            <ListGroup>
-               { tasks.map( (task) => 
-                    <ListGroupItem key={task.id}>
-                        <div className="d-flex justify-content-start">
-                            <div className="mr-3">
-                                <input id={task.id} type="checkbox" onClick={handleCheckboxClick}></input>
-                            </div>
-                            <div>
-                                <ListGroupItemHeading>{ task.heading }</ListGroupItemHeading>
-                                <ListGroupItemText>{ task.text } </ListGroupItemText>
-                            </div>
-                        </div>
-                    </ListGroupItem>)}
-            </ListGroup>
-        </div>
-    );
-}
-
-export default TodoList;
+    export default TodoList;
