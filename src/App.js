@@ -1,11 +1,13 @@
-import './App.css';
-import DrawerApp from './components/TodoList/DrawerApp';
+import "./App.css";
+import DrawerApp from "./components/TodoList/DrawerApp";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 function App() {
   return (
-    <div >
+    <Provider store={store}>
       <DrawerApp />
-    </div>
+    </Provider>
   );
 }
 
