@@ -26,6 +26,13 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [
+          { title: "hello" },
+          { title: "my" },
+          { title: "name" },
+          { title: "is" },
+          { title: "tal" },
+        ],
       },
       {
         id: uuidv4(),
@@ -37,6 +44,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [{ title: "hello" }, { title: "lidor" }],
       },
       {
         id: uuidv4(),
@@ -48,6 +56,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -59,6 +68,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
     ],
   },
@@ -75,6 +85,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -86,6 +97,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -97,6 +109,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -108,6 +121,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -119,6 +133,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -130,6 +145,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -141,6 +157,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
     ],
   },
@@ -157,6 +174,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -168,6 +186,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -179,6 +198,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -190,6 +210,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -201,6 +222,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -212,6 +234,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -223,6 +246,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
     ],
   },
@@ -239,6 +263,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -250,6 +275,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -261,6 +287,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -272,6 +299,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -283,6 +311,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -294,6 +323,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
       {
         id: uuidv4(),
@@ -305,6 +335,7 @@ export const tasksData = [
         duration: "02:00",
         due: formattedDateTime,
         reminder: "01:00",
+        tags: [],
       },
     ],
   },
