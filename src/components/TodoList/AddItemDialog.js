@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTheme, makeStyles } from "@material-ui/core/styles";
 import { Dialog, DialogTitle, DialogContent, Divider } from "@material-ui/core";
@@ -8,12 +8,13 @@ import { status, priority } from "../../data/data";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { actions } from "../../redux/store";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import formatISO from "date-fns/formatISO";
 import { v4 as uuidv4 } from "uuid";
 import TimeTable from "./TimeTable";
 import Priority from "./Priority";
-import DialogFooterBar from "./DialogFooterBar";
+import FooterBar from "./FooterBar";
+import AddTags from "./AddTags";
 
 const today = new Date();
 const formattedDate = formatISO(today, { representation: "date" });
@@ -23,8 +24,9 @@ function AddItemDialog(props) {
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
 
+  const [tags, setTags] = useState();
+  const currentTags = useSelector((state) => state.tags);
   const dispatch = useDispatch();
-  //const todoList = useSelector((state) => state.todos[state.selectedIndex]);
 
   const handleClose = () => {
     props.setOpen(false);
@@ -46,20 +48,12 @@ function AddItemDialog(props) {
   });
 
   const onSubmit = (data) => {
-    const newTask = {
-      id: uuidv4(),
-      name: data.name,
-      status: status[0],
-      priority: data.priority,
-      notes: data.notes,
-      scheduled: data.scheduled,
-      duration: data.duration,
-      due: data.due,
-      reminder: data.reminder,
-    };
+    const newTags = tags.filter((tag) => currentTags.indexOf(tag) === -1);
 
+    newTags.map((tag) => dispatch(actions.addTag(tag)));
+
+    const newTask = { id: uuidv4(), ...data, tags: tags };
     dispatch(actions.addTask({ newTask: newTask }));
-
     handleClose();
   };
 
@@ -72,7 +66,7 @@ function AddItemDialog(props) {
     >
       <DialogTitle id="add-item">Add New Task</DialogTitle>
       <DialogContent>
-        <form className={classes.root} onSubmit={handleSubmit(onSubmit)}>
+        <form className={classes.root}>
           <TextField
             id="name"
             name="name"
@@ -107,8 +101,14 @@ function AddItemDialog(props) {
             inputRef={register}
           />
           <Divider />
+          <AddTags name="tags" register={register} setTags={setTags} />
+          <Divider />
           <TimeTable register={register} />
-          <DialogFooterBar handleClose={handleClose} />
+          <FooterBar
+            handleClose={handleClose}
+            handleSubmit={handleSubmit}
+            onSubmit={onSubmit}
+          />
         </form>
       </DialogContent>
     </Dialog>
@@ -124,10 +124,6 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       minWidth: 120,
     },
-  },
-  container: {
-    display: "flex",
-    flexWrap: "wrap",
   },
   textField: {
     marginLeft: theme.spacing(1),

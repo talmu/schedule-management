@@ -8,6 +8,7 @@ import EditItemDialog from "./EditItemDialog";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "../../redux/store";
+import ItemTags from "./ItemTags";
 
 function TodoList(props) {
   const classes = useStyles();
@@ -15,7 +16,7 @@ function TodoList(props) {
   const todoList = useSelector((state) => state.todos[state.selectedIndex]);
   const dispatch = useDispatch();
 
-  const [isAddOpen, setAddOpen] = useState(false);
+  const [isOpen, setOpen] = useState(false);
   const [isEditOpen, setEditOpen] = useState(false);
   const [checked, setChecked] = useState([0]);
 
@@ -38,50 +39,53 @@ function TodoList(props) {
   return (
     <div>
       <List className={classes.root}>
-        {todoList.data.map((task) => {
+        {todoList.data.map((task, index) => {
           const labelId = `checkbox-list-label-${task.name}`;
 
           return (
-            <ListItem
-              key={task.id}
-              role={undefined}
-              dense
-              button
-              onClick={handleCheckboxClick(task)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                  checked={checked.indexOf(task) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": labelId }}
-                />
-              </ListItemIcon>
-              <ListItemText
-                className="text-wrap"
-                id={labelId}
-                primary={task.name}
-              ></ListItemText>
-              <ListItemSecondaryAction>
-                <IconButton edge="end" onClick={() => setEditOpen(true)}>
-                  <Edit />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
+            <div>
+              <ListItem
+                key={task.id}
+                role={undefined}
+                dense
+                button
+                onClick={handleCheckboxClick(task)}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    edge="start"
+                    checked={checked.indexOf(task) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ "aria-labelledby": labelId }}
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  className="text-wrap"
+                  id={labelId}
+                  primary={task.name}
+                ></ListItemText>
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" onClick={() => setEditOpen(true)}>
+                    <Edit />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ItemTags index={index} />
+            </div>
           );
         })}
       </List>
       <Fab
         color="primary"
         aria-label="add"
-        onClick={() => setAddOpen(true)}
+        onClick={() => setOpen(true)}
         className={classes.fab}
       >
         <Add />
       </Fab>
 
-      <AddItemDialog open={isAddOpen} setOpen={setAddOpen}></AddItemDialog>
+      <AddItemDialog open={isOpen} setOpen={setOpen}></AddItemDialog>
       <EditItemDialog open={isEditOpen} setOpen={setEditOpen}></EditItemDialog>
     </div>
   );

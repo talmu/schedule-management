@@ -24,12 +24,17 @@ const removeChecked = (state, { payload }) => {
   state.todos[state.selectedIndex].data[payload.taskIndex].status = status[0];
 };
 
+const addTag = (state, { payload }) => {
+  state.tags.push(payload);
+};
+
 const todoSlice = createSlice({
   name: "todos",
   initialState: {
     todos: tasksData,
     selectedIndex: 0,
     title: "Math List",
+    tags: [{ title: "Exam Task" }, { title: "Home Task" }],
   },
   reducers: {
     selectList,
@@ -37,6 +42,7 @@ const todoSlice = createSlice({
     // editTask,
     addChecked,
     removeChecked,
+    addTag,
   },
 });
 
