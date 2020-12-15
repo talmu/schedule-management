@@ -12,6 +12,8 @@ export const status = ["To do", "In progress", "Done"];
 
 export const priority = ["Urgent", "High", "Medium", "Low"];
 
+export const modes = ["Add", "Edit"];
+
 export const tasksData = [
   {
     subject: "Math",
@@ -20,8 +22,8 @@ export const tasksData = [
         id: uuidv4(),
         name: "Go home",
         status: status[0],
-        priority: priority[3],
-        notes: "",
+        priority: priority[0],
+        notes: "hello",
         scheduled: formattedDate,
         duration: "02:00",
         due: formattedDateTime,

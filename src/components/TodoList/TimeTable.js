@@ -1,6 +1,6 @@
 import { TextField, Grid } from "@material-ui/core";
 
-function TimeTable(props) {
+const TimeTable = (props) => {
   return (
     <Grid container spacing={1}>
       <Grid item xs={8}>
@@ -10,8 +10,9 @@ function TimeTable(props) {
           label="Scheduled"
           type="date"
           className="mr-4"
+          defaultValue={props.task.scheduled}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register}
+          inputRef={props.register({ required: true })}
         ></TextField>
       </Grid>
 
@@ -21,8 +22,9 @@ function TimeTable(props) {
           name="duration"
           label="Duration"
           type="time"
+          defaultValue={props.task.duration}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register}
+          inputRef={props.register({ required: true })}
         ></TextField>
       </Grid>
 
@@ -32,8 +34,9 @@ function TimeTable(props) {
           name="due"
           label="Due"
           type="datetime-local"
+          defaultValue={props.task.due}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register}
+          inputRef={props.register({ required: true })}
         ></TextField>
       </Grid>
 
@@ -43,12 +46,13 @@ function TimeTable(props) {
           name="reminder"
           label="Reminder"
           type="time"
+          defaultValue={props.task.reminder}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register}
+          inputRef={props.register({ required: true })}
         ></TextField>
       </Grid>
     </Grid>
   );
-}
+};
 
 export default TimeTable;
