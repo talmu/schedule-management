@@ -7,14 +7,16 @@ const selectList = (state, { payload }) => {
 };
 
 const addTask = (state, action) => {
-  const { newTask } = action.payload;
-  state.todos[state.selectedIndex].data.push(newTask);
+  state.todos[state.selectedIndex].data.push(action.payload);
 };
 
-// const editTask = (state, { payload }) => {
-//   state.todos[state.selectedIndex].data[payload.taskIndex] =
-//     payload.modifiedTask;
-// };
+const editTask = (state, { payload }) => {
+  state.todos[state.selectedIndex].data = [
+    ...state.todos[state.selectedIndex].data.slice(0, state.selectedTask),
+    { ...payload },
+    ...state.todos[state.selectedIndex].data.slice(state.selectedTask + 1),
+  ];
+};
 
 const addChecked = (state, { payload }) => {
   state.todos[state.selectedIndex].data[payload.taskIndex].status = status[2];
@@ -24,8 +26,12 @@ const removeChecked = (state, { payload }) => {
   state.todos[state.selectedIndex].data[payload.taskIndex].status = status[0];
 };
 
-const addTag = (state, { payload }) => {
+const addTags = (state, { payload }) => {
   state.tags.push(payload);
+};
+
+const selectTask = (state, { payload }) => {
+  state.selectedTask = payload;
 };
 
 const todoSlice = createSlice({
@@ -33,16 +39,18 @@ const todoSlice = createSlice({
   initialState: {
     todos: tasksData,
     selectedIndex: 0,
+    selectedTask: -1,
     title: "Math List",
     tags: [{ title: "Exam Task" }, { title: "Home Task" }],
   },
   reducers: {
     selectList,
     addTask,
-    // editTask,
+    editTask,
     addChecked,
     removeChecked,
-    addTag,
+    addTags,
+    selectTask,
   },
 });
 

@@ -9,7 +9,7 @@ import { ImportContacts } from "@material-ui/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { actions } from "../../redux/store";
 
-function DrawerApp(props) {
+const DrawerApp = (props) => {
   const selectedIndex = useSelector((state) => state.selectedIndex);
   const title = useSelector((state) => state.title);
 
@@ -138,7 +138,7 @@ function DrawerApp(props) {
       </main>
     </div>
   );
-}
+};
 
 const drawerWidth = 240;
 
