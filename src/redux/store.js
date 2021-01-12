@@ -1,61 +1,86 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
-import { tasksData, status } from "../data/data";
+import { tasksData } from "../data/data";
+// import { connectRouter, routerMiddleware } from "connected-react-router";
+import { createBrowserHistory } from "history";
 
-const selectList = (state, { payload }) => {
-  state.selectedIndex = payload.index;
-  state.title = state.todos[state.selectedIndex].subject + " List";
-};
-
-const addTask = (state, action) => {
-  state.todos[state.selectedIndex].data.push(action.payload);
+const addTask = (state, { payload }) => {
+  state.todos[payload.listId].data.push(payload.task);
 };
 
 const editTask = (state, { payload }) => {
-  state.todos[state.selectedIndex].data = [
-    ...state.todos[state.selectedIndex].data.slice(0, state.selectedTask),
-    { ...payload },
-    ...state.todos[state.selectedIndex].data.slice(state.selectedTask + 1),
-  ];
+  state.todos[payload.listId].data.splice(payload.taskId, 1, {
+    ...payload.task,
+  });
 };
 
-const addChecked = (state, { payload }) => {
-  state.todos[state.selectedIndex].data[payload.taskIndex].status = status[2];
+const deleteTask = (state, { payload }) => {
+  state.todos[payload.listId].data.splice(payload.taskId, 1);
 };
 
-const removeChecked = (state, { payload }) => {
-  state.todos[state.selectedIndex].data[payload.taskIndex].status = status[0];
+const updateTaskStatus = (state, { payload }) => {
+  state.todos[payload.listId].data[payload.taskId].status = payload.status;
 };
 
 const addTags = (state, { payload }) => {
   state.tags.push(payload);
 };
 
-const selectTask = (state, { payload }) => {
-  state.selectedTask = payload;
+const updateSubtaskDone = (state, { payload }) => {
+  state.todos[payload.listId].data[payload.taskId].subtasks[
+    payload.subtaskId
+  ].done = payload.done;
+};
+
+const addSubtask = (state, { payload }) => {
+  state.todos[payload.listId].data[payload.taskId].subtasks.push({
+    name: payload.name,
+    done: false,
+  });
+};
+
+const removeSubtask = (state, { payload }) => {
+  state.todos[payload.listId].data[payload.taskId].subtasks.splice(
+    payload.subtaskId,
+    1
+  );
 };
 
 const todoSlice = createSlice({
   name: "todos",
   initialState: {
     todos: tasksData,
-    selectedIndex: 0,
-    selectedTask: -1,
-    title: "Math List",
     tags: [{ title: "Exam Task" }, { title: "Home Task" }],
   },
   reducers: {
-    selectList,
     addTask,
     editTask,
-    addChecked,
-    removeChecked,
+    deleteTask,
+    updateTaskStatus,
     addTags,
-    selectTask,
+    updateSubtaskDone,
+    addSubtask,
+    removeSubtask,
   },
 });
 
+export const history = createBrowserHistory();
+
+// const rootReducer = (history) =>
+//   combineReducers({
+//     router: connectRouter(history),
+//     todos: todoSlice.reducer,
+//   });
+
+// export const store = configureStore({
+//   reducer: todoSlice.reducer,
+// });
+
 export const store = configureStore({
-  reducer: todoSlice.reducer,
+  reducer:
+    // router: connectRouter(history),
+    todoSlice.reducer,
+  // },
+  // middleware: [routerMiddleware(history)],
 });
 
 export const { actions } = todoSlice;
