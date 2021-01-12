@@ -1,6 +1,6 @@
 import { TextField, Grid } from "@material-ui/core";
 
-const TimeTable = (props) => {
+const TimeTable = ({ task, register }) => {
   return (
     <Grid container spacing={1}>
       <Grid item xs={8}>
@@ -10,9 +10,9 @@ const TimeTable = (props) => {
           label="Scheduled"
           type="date"
           className="mr-4"
-          defaultValue={props.task.scheduled}
+          defaultValue={task.scheduled}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register({ required: true })}
+          inputRef={register({ required: true })}
         ></TextField>
       </Grid>
 
@@ -22,9 +22,9 @@ const TimeTable = (props) => {
           name="duration"
           label="Duration"
           type="time"
-          defaultValue={props.task.duration}
+          defaultValue={task.duration}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register({ required: true })}
+          inputRef={register({ required: true })}
         ></TextField>
       </Grid>
 
@@ -34,9 +34,9 @@ const TimeTable = (props) => {
           name="due"
           label="Due"
           type="datetime-local"
-          defaultValue={props.task.due}
+          defaultValue={task.due}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register({ required: true })}
+          inputRef={register({ required: true })}
         ></TextField>
       </Grid>
 
@@ -46,9 +46,9 @@ const TimeTable = (props) => {
           name="reminder"
           label="Reminder"
           type="time"
-          defaultValue={props.task.reminder}
+          defaultValue={task.reminder}
           InputLabelProps={{ shrink: true }}
-          inputRef={props.register({ required: true })}
+          inputRef={register({ required: true })}
         ></TextField>
       </Grid>
     </Grid>

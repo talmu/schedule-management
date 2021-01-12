@@ -1,13 +1,22 @@
 import "./App.css";
-import DrawerApp from "./components/TodoList/DrawerApp";
+import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
+import { store, history } from "./redux/store";
+import Template from "./components/Template";
+import Router from "./Router";
+// import { ConnectedRouter } from "connected-react-router";
 
 function App() {
   return (
-    <Provider store={store}>
-      <DrawerApp />
-    </Provider>
+    <BrowserRouter>
+      <Provider store={store}>
+        {/* <ConnectedRouter history={history}> */}
+        <Template>
+          <Router history={history} />
+        </Template>
+        {/* </ConnectedRouter> */}
+      </Provider>
+    </BrowserRouter>
   );
 }
 

@@ -14,6 +14,8 @@ export const priority = ["Urgent", "High", "Medium", "Low"];
 
 export const modes = ["Add", "Edit"];
 
+export const lists = ["Math", "Hebraw", "English", "Computer"];
+
 export const tasksData = [
   {
     subject: "Math",
@@ -21,7 +23,7 @@ export const tasksData = [
       {
         id: uuidv4(),
         name: "Go home",
-        status: status[0],
+        status: status[2],
         priority: priority[0],
         notes: "hello",
         scheduled: formattedDate,
@@ -34,7 +36,11 @@ export const tasksData = [
           { title: "name" },
           { title: "is" },
           { title: "tal" },
+          { title: "and" },
+          { title: "my daughter" },
+          { title: "is tair" },
         ],
+        subtasks: [{ name: "Put chair in the car", done: true }],
       },
       {
         id: uuidv4(),
@@ -47,6 +53,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [{ title: "hello" }, { title: "lidor" }],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -59,6 +66,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -71,6 +79,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
     ],
   },
@@ -88,6 +97,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -100,6 +110,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -112,6 +123,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -124,6 +136,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -136,6 +149,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -148,6 +162,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -160,6 +175,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
     ],
   },
@@ -177,6 +193,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -189,6 +206,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -201,6 +219,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -213,6 +232,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -225,6 +245,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -237,6 +258,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -249,6 +271,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
     ],
   },
@@ -266,6 +289,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -278,6 +302,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -290,6 +315,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -302,6 +328,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -314,6 +341,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -326,6 +354,7 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
       {
         id: uuidv4(),
@@ -338,9 +367,16 @@ export const tasksData = [
         due: formattedDateTime,
         reminder: "01:00",
         tags: [],
+        subtasks: [],
       },
     ],
   },
 ];
 
-console.log(tasksData);
+export const mathChecked = tasksData[0].data.filter(
+  (item) => item.status === status[2]
+);
+
+export const mathNestedChecked = tasksData[0].data.map((task) => {
+  return task.subtasks.filter((subtask) => subtask.done);
+});
