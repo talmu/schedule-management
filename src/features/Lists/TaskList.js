@@ -1,24 +1,33 @@
 import React from "react";
 import { List } from "@material-ui/core";
-import { useSelector } from "react-redux";
 import Item from "./Item";
-import { useParams } from "react-router-dom";
+import { useTodoList } from "../../data/useTodoList";
+import Loading from "../../components/Loading";
+// import { useSelector } from "react-redux";
+// import { useParams } from "react-router-dom";
 
 const TaskList = () => {
-  const { listId } = useParams();
-  const todoList = useSelector((state) => state.todos[listId]);
+  // const { listId } = useParams();
+  // const todoList = useSelector((state) => state.todos[listId]);
+  const [todoList, isFetching] = useTodoList();
 
-  return (
+  console.log(todoList, isFetching);
+
+  const content = isFetching ? (
+    <Loading />
+  ) : (
     <div style={{ width: "95%" }}>
       <List key="todolist">
-        {todoList.data.map((task, index) => {
-          return (
-            <Item key={index.toString()} index={index} todoList={todoList} />
-          );
+        {todoList.map((task) => {
+          console.log(task);
+          // return "";
+          return <Item key={task.id} todo={task} />;
         })}
       </List>
     </div>
   );
+
+  return content;
 };
 
 export default TaskList;

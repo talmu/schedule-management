@@ -1,8 +1,7 @@
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider } from "@material-ui/core";
 import { TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useSelector } from "react-redux";
@@ -11,7 +10,6 @@ import Priority from "./Priority";
 import FooterBar from "./FooterBar";
 import Tags from "./Tags";
 import { status } from "../../data/data";
-// import { useParams } from "react-router-dom";
 import EditableSubtasks from "./EditableSubtasks";
 
 const Task = ({ task }) => {
@@ -19,10 +17,6 @@ const Task = ({ task }) => {
 
   const tags = useSelector((state) => state.tags);
   const todos = useSelector((state) => state.todos);
-
-  // const selectedIndex = useSelector((state) => state.selectedIndex);
-  // const selected = useSelector((state) => state.selectedTask);
-  // const mode = selected !== -1 ? "Edit" : "Add";
 
   // form validation rules
   const validationSchema = yup.object().shape({
@@ -40,7 +34,7 @@ const Task = ({ task }) => {
     <div style={{ width: "88%" }} className={classes.marginLeft}>
       <form className={classes.root}>
         <TextField
-          id="name"
+          key="name"
           name="name"
           label="Name"
           variant="outlined"
@@ -51,26 +45,31 @@ const Task = ({ task }) => {
         />
         <p>{errors.name?.message}</p>
         <TextField
-          id="select"
+          key="select"
           name="status"
           label="Status"
           variant="outlined"
           fullWidth
           defaultValue={task.status}
           select
+          SelectProps={{
+            native: true,
+          }}
           inputRef={register({ required: true })}
         >
           {status.map((s) => (
-            <MenuItem value={s}>{s}</MenuItem>
+            <option key={s} value={s}>
+              {s}
+            </option>
           ))}
         </TextField>
         <Divider />
-        <EditableSubtasks control={control} register={register} />
+        <EditableSubtasks control={control} />
         <Divider />
         <Priority control={control} taskPriority={task.priority} />
         <Divider />
         <TextField
-          id="task-notes"
+          key="task-notes"
           name="notes"
           label="Notes"
           variant="outlined"

@@ -1,4 +1,4 @@
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Add } from "@material-ui/icons";
 import { Fab } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,7 +7,6 @@ const AddFab = () => {
   const classes = useStyles();
   const history = useHistory();
   return (
-    // <Link to="/add-task">
     <Fab
       key="fab-add"
       color="primary"
@@ -17,7 +16,6 @@ const AddFab = () => {
     >
       <Add />
     </Fab>
-    // </Link>
   );
 };
 

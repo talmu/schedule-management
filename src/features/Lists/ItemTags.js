@@ -8,6 +8,7 @@ const ItemTags = ({ todoList, taskId }) => {
   const tags = todoList.data[taskId].tags;
   const [open, setOpen] = useState(false);
   const classes = useStyles();
+
   const subtasksLen = todoList.data[taskId].subtasks.length;
 
   return (

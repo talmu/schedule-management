@@ -45,7 +45,7 @@ const FooterBar = ({ handleSubmit, tags, task, todos, mode }) => {
   };
 
   const deleteIcon = (
-    <IconButton color="inherit" onClick={handleDelete}>
+    <IconButton name="delete" color="inherit" onClick={handleDelete}>
       <Delete />
     </IconButton>
   );
@@ -59,13 +59,13 @@ const FooterBar = ({ handleSubmit, tags, task, todos, mode }) => {
             name="submit"
             color="inherit"
             onClick={() => {
-              handleSubmit(onSubmit);
+              handleSubmit(onSubmit)();
               redirectToList();
             }}
           >
             <Save />
           </IconButton>
-          <IconButton color="inherit" onClick={redirectToList}>
+          <IconButton name="cancle" color="inherit" onClick={redirectToList}>
             <Close />
           </IconButton>
         </Grid>

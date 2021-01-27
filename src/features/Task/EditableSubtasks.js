@@ -1,26 +1,28 @@
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { ListItemSecondaryAction, IconButton } from "@material-ui/core";
-import { TextField } from "@material-ui/core";
+import { TextField, Checkbox } from "@material-ui/core";
 import { SubdirectoryArrowRight, Close, Check } from "@material-ui/icons";
-import { Controller, useFieldArray } from "react-hook-form";
+import { useFieldArray, Controller } from "react-hook-form";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import { useDispatch } from "react-redux";
+import { actions } from "../../redux/store";
 import { useParams } from "react-router-dom";
 
-const AddSubtask = ({ control }) => {
+const EditableSubtasks = ({ control }) => {
   const [clicked, setClicked] = useState(false);
   const [subtask, setSubtask] = useState("");
-  const { taskId } = useParams();
+
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const { listId, taskId } = useParams();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "subtasks",
   });
-  const classes = useStyles();
 
-  console.log(fields);
-
-  const handleCheckClick = () => {
+  const handleConfirm = () => {
     setClicked(false);
     if (subtask) {
       append({ name: subtask, done: false });
@@ -28,15 +30,32 @@ const AddSubtask = ({ control }) => {
     }
   };
 
+  const handleCheckboxChange = (index) => (event) => {
+    dispatch(
+      actions.updateSubtaskDone({
+        listId: listId,
+        taskId: taskId,
+        subtaskId: index,
+        done: event.target.checked,
+      })
+    );
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") handleConfirm();
+  };
+
   const newSubtask = (
     <div>
       <TextField
+        name="newSubtask"
         className={classes.marginTopBottom}
         label="Subtask"
         onChange={(e) => setSubtask(e.target.value)}
+        onKeyPress={handleKeyPress}
         defaultValue=""
       ></TextField>
-      <IconButton edge="end" onClick={handleCheckClick}>
+      <IconButton edge="end" onClick={handleConfirm}>
         <Check />
       </IconButton>
       <IconButton
@@ -53,12 +72,31 @@ const AddSubtask = ({ control }) => {
 
   return (
     <div>
-      <List component="div">
+      <List>
         {fields.map((subtask, index) => {
-          const id = `${taskId}-${index}`;
           return (
-            <ListItem className={classes.nestedSubtask} key={id}>
-              <ListItemText primary={subtask.name} />
+            <ListItem className={classes.nestedSubtask} key={subtask.id}>
+              <Controller
+                name={`subtasks[${index}].done`}
+                control={control}
+                defaultValue={subtask.done}
+                render={() => (
+                  <ListItemIcon>
+                    <Checkbox
+                      edge="start"
+                      checked={subtask.done}
+                      color="primary"
+                      onChange={handleCheckboxChange(index)}
+                    />
+                  </ListItemIcon>
+                )}
+              />
+              <Controller
+                name={`subtasks[${index}].name`}
+                control={control}
+                defaultValue={subtask.name}
+                render={() => <ListItemText primary={subtask.name} />}
+              />
               <ListItemSecondaryAction>
                 <IconButton edge="end" onClick={() => remove(index)}>
                   <Close />
@@ -88,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default AddSubtask;
+export default EditableSubtasks;
 
 // <Controller
 //   name="subtasks"
