@@ -1,35 +1,18 @@
-import { useDispatch } from "react-redux";
 import { Checkbox, ListItemSecondaryAction } from "@material-ui/core";
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { Edit } from "@material-ui/icons";
-import { actions } from "../../redux/store";
 import ItemTags from "./ItemTags";
 import { useParams, useHistory } from "react-router-dom";
-import { status } from "../../data/data";
-import { useRxDocument } from "rxdb-hooks";
 
 const Item = ({ todo }) => {
-  // const dispatch = useDispatch();
-  // const task = todoList[index];
-  // const { result: item } = useRxDocument("todos", todo.id);
-  const item = todo;
-
   const { listId } = useParams();
   const history = useHistory();
+  const item = todo;
 
   const handleCheck = async (event) => {
-    // const newStatus = event.target.checked ? status[2] : status[1];
-    // dispatch(
-    //   actions.updateTaskStatus({
-    //     listId: listId,
-    //     taskId: index,
-    //     status: newStatus,
-    //   })
-    // );
-
     const updateFunction = (item) => {
-      item.status = event.target.checked ? status[2] : status[1];
+      item.status = event.target.checked ? "2" : "1";
     };
 
     await item.atomicUpdate(updateFunction);
@@ -43,7 +26,7 @@ const Item = ({ todo }) => {
         <ListItemIcon>
           <Checkbox
             edge="start"
-            checked={todo.status === "Done"}
+            checked={todo.status === "2"}
             color="primary"
             inputProps={{ "aria-labelledby": labelId }}
             onChange={handleCheck}
@@ -59,7 +42,7 @@ const Item = ({ todo }) => {
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
-      {/* <ItemTags todo={todo} /> */}
+      <ItemTags todo={todo} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import { initializeDB, GraphQLReplicator } from "./data/Database";
+import { initializeDB, RemoteDbReplication } from "./data/Database";
 import { BrowserRouter } from "react-router-dom";
 import { Provider as StoreProvider } from "react-redux";
 import { Provider as RxDBProvider } from "rxdb-hooks";
@@ -15,9 +15,10 @@ const App = () => {
   useEffect(() => {
     const initDB = async () => {
       const _db = await initializeDB();
-      const cancle = GraphQLReplicator(_db);
+      const cancellations = RemoteDbReplication(_db);
       setDb(_db);
-      return cancle;
+
+      return cancellations;
     };
     initDB();
   }, []);

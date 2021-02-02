@@ -1,9 +1,12 @@
 import { Controller } from "react-hook-form";
 import { RadioGroup, FormControl, FormControlLabel } from "@material-ui/core";
 import { Radio, FormLabel, Grid } from "@material-ui/core";
-import { priority } from "../../data/data";
+import { useRxData } from "rxdb-hooks";
 
 const Priority = ({ control, taskPriority }) => {
+  const { result: priority } = useRxData("priority", (collection) =>
+    collection.find()
+  );
   return (
     <FormControl component="fieldset">
       <Grid container spacing={1}>
@@ -21,15 +24,15 @@ const Priority = ({ control, taskPriority }) => {
               value={value}
               onChange={(e) => onChange(e.target.value)}
             >
-              {priority.map((p, index) => {
-                const key = `${index}-${p}`;
+              {priority.map((p) => {
+                const key = `${p.id}-${p.text}`;
                 return (
                   <Grid item xs={3} key={key}>
                     <FormControlLabel
-                      name={p}
-                      value={p}
+                      name={p.text}
+                      value={p.id}
                       control={<Radio color="secondary" />}
-                      label={p}
+                      label={p.text}
                       labelPlacement="bottom"
                     />
                   </Grid>
@@ -44,39 +47,3 @@ const Priority = ({ control, taskPriority }) => {
 };
 
 export default Priority;
-
-// <Controller
-// name="priority"
-// control={control}
-// rules={{ required: true }}
-// defaultValue={taskPriority}
-// render={({ onChange, value }) => (
-//   <FormControl component="fieldset">
-//     <Grid container spacing={1}>
-//       <Grid item xs={12}>
-//         <FormLabel component="legend">Priority</FormLabel>
-//       </Grid>
-//       <RadioGroup
-//         row
-//         value={value}
-//         onChange={(e) => onChange(e.target.value)}
-//       >
-//         {priority.map((p, index) => {
-//           const key = `${index}-${p}`;
-//           return (
-//             <Grid item xs={3} key={key}>
-//               <FormControlLabel
-//                 name={p}
-//                 value={p}
-//                 control={<Radio color="secondary" />}
-//                 label={p}
-//                 labelPlacement="bottom"
-//               />
-//             </Grid>
-//           );
-//         })}
-//       </RadioGroup>
-//     </Grid>
-//   </FormControl>
-// )}
-// />

@@ -2,10 +2,13 @@ import { TextField, Grid, InputLabel } from "@material-ui/core";
 import { Controller } from "react-hook-form";
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
+import { useRxData } from "rxdb-hooks";
 
-const Tags = ({ control, tags, defaultTags }) => {
+const Tags = ({ control, defaultTags }) => {
   const filter = createFilterOptions();
   const classes = useStyles();
+
+  const { result: tags } = useRxData("tags", (collection) => collection.find());
 
   return (
     <Grid container>
@@ -27,10 +30,12 @@ const Tags = ({ control, tags, defaultTags }) => {
               clearOnBlur
               value={value}
               options={tags}
-              renderOption={(option) => option.title}
-              getOptionLabel={(option) =>
-                option.inputValue ? option.inputValue : option.title
-              }
+              renderOption={(option) => option.text}
+              getOptionLabel={(option) => {
+                if (typeof option === "string") return option;
+                if (option.inputValue) return option.inputValue;
+                return option.text;
+              }}
               filterOptions={(options, params) => {
                 const filtered = filter(options, params);
 
@@ -38,7 +43,7 @@ const Tags = ({ control, tags, defaultTags }) => {
                 if (params.inputValue !== "") {
                   filtered.push({
                     inputValue: params.inputValue,
-                    title: `Create "${params.inputValue}"`,
+                    text: `Create "${params.inputValue}"`,
                   });
                 }
 

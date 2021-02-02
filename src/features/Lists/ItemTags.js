@@ -3,13 +3,27 @@ import Subtasks from "./Subtasks";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
+import { useRxData } from "rxdb-hooks";
+import * as R from "ramda";
 
-const ItemTags = ({ todoList, taskId }) => {
-  const tags = todoList.data[taskId].tags;
+const ItemTags = ({ todo }) => {
   const [open, setOpen] = useState(false);
   const classes = useStyles();
 
-  const subtasksLen = todoList.data[taskId].subtasks.length;
+  const { result: subtasks } = useRxData("subtasks", (collection) =>
+    collection.find().where("task_id").equals(todo.id)
+  );
+  const subtasksLen = subtasks.length;
+
+  const { result: task_tags } = useRxData("task_tags", (collection) =>
+    collection.find().where("task_id").equals(todo.id)
+  );
+
+  const { result: tags } = useRxData("tags", (collection) => collection.find());
+
+  // const { result: tags } = useRxData("tags_master", (collection) =>
+  //   collection.find().where("task_id").equals(todo.id)
+  // );
 
   return (
     <div style={{ width: "80%" }}>
@@ -26,12 +40,14 @@ const ItemTags = ({ todoList, taskId }) => {
             />
           </Grid>
         ) : null}
-        {tags.length > 0
-          ? tags.map((tag) => {
-              const key = `${taskId}-${tag.title}`;
+        {task_tags.length > 0
+          ? task_tags.map((task_tag, index) => {
+              const key = `${index}-${task_tag.id}`;
+              const text = R.find(R.propEq("id", task_tag.tag_id))(tags).text;
+
               return (
                 <Grid item key={key}>
-                  <Chip size="small" label={tag.title} color="secondary" />
+                  <Chip size="small" label={text} color="secondary" />
                 </Grid>
               );
             })
@@ -39,7 +55,7 @@ const ItemTags = ({ todoList, taskId }) => {
       </Grid>
       {subtasksLen !== 0 ? (
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <Subtasks todoList={todoList} taskId={taskId} />
+          <Subtasks todo={todo} />
         </Collapse>
       ) : null}
     </div>

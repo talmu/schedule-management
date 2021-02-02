@@ -1,44 +1,65 @@
-import { useDispatch } from "react-redux";
-import { actions } from "../../redux/store";
 import { v4 as uuidv4 } from "uuid";
 import { Delete, Close, Save } from "@material-ui/icons";
 import { AppBar, Toolbar, IconButton, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory, useParams } from "react-router-dom";
+import { useRxData, useRxDocument, useRxCollection } from "rxdb-hooks";
+import * as R from "ramda";
+import { formatISO } from "date-fns";
 
-const FooterBar = ({ handleSubmit, tags, task, todos, mode }) => {
-  const dispatch = useDispatch();
+const FooterBar = ({ handleSubmit, task }) => {
   const classes = useStyles();
-  const { listId, taskId } = useParams();
+  const { listId, taskId, newTask } = useParams();
   const history = useHistory();
 
-  const handleDelete = () => {
-    dispatch(actions.deleteTask({ listId: listId, taskId: taskId }));
+  const { result: tags } = useRxData("tags", (collection) => collection.find());
+  const { result: subtasks } = useRxData("subtasks", (collection) =>
+    collection.find().where("task_id").equals(taskId)
+  );
+  const { result: task_tags } = useRxData("task_tags", (collection) =>
+    collection.find().where("task_id").equals(taskId)
+  );
+
+  const todos = useRxCollection("todos");
+
+  const document = useRxDocument("todos", taskId);
+
+  const handleDelete = async () => {
+    await document.remove();
+    subtasks.map(async (subtask) => await subtask.remove());
+    task_tags.map(async (task_tag) => await task_tag.remove());
+    console.log(document.deleted);
   };
 
   const redirectToList = () => {
     history.push(`/${listId}`);
   };
 
-  const onSubmit = (data) => {
-    console.log(data);
-    if (data.tags) {
-      const newTags = data.tags.filter((tag) => tags.indexOf(tag) === -1);
-      if (newTags.length > 0) {
-        dispatch(actions.addTags(newTags));
-      }
-    }
-    console.log(tags);
-
-    if (taskId) {
-      const newTask = { id: task.id, ...data };
-      dispatch(actions.editTask({ task: newTask, listId: listId }));
-    } else {
-      const newTask = { id: uuidv4(), ...data };
-      dispatch(
-        actions.addTask({ task: newTask, listId: listId, taskId: taskId })
-      );
-    }
+  const onSubmit = async (data) => {
+    document
+      ? await document.atomicUpdate((oldData) => {
+          oldData.name = data.name;
+          oldData.updated_at = formatISO(new Date());
+          oldData.status_id = data.status;
+          oldData.priority_id = data.priority;
+          oldData.notes = data.notes;
+          oldData.scheduled = data.scheduled;
+          oldData.duration = data.duration;
+          oldData.due = data.due;
+          oldData.reminder = data.reminder;
+        })
+      : await todos.insert({
+          id: newTask,
+          name: data.name,
+          updated_at: formatISO(new Date()),
+          status_id: data.status,
+          priority_id: data.priority,
+          notes: data.notes,
+          scheduled: data.scheduled,
+          duration: data.duration,
+          due: data.due,
+          reminder: data.reminder,
+        });
 
     console.log(todos[listId]);
     console.log(tags);

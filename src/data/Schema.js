@@ -21,13 +21,16 @@ export const todoSchema = {
       type: "string",
     },
     list_id: {
-      type: "number",
+      type: "string",
+      ref: "lists",
     },
     status_id: {
-      type: "number",
+      type: "string",
+      ref: "status",
     },
     priority_id: {
-      type: "number",
+      type: "string",
+      ref: "priority",
     },
     notes: {
       type: "string",
@@ -44,54 +47,15 @@ export const todoSchema = {
     reminder: {
       type: "string",
     },
-    subtasks: {
-      type: "array",
-      items: {
-        type: "object",
-        uniqueItems: true,
-        properties: {
-          id: {
-            type: "integer",
-          },
-          task_id: {
-            type: "string",
-          },
-          name: {
-            type: "string",
-          },
-          done: {
-            type: "boolean",
-          },
-        },
-      },
-    },
-    task_tags: {
-      type: "array",
-      items: {
-        type: "object",
-        uniqueItems: true,
-        properties: {
-          id: {
-            type: "integer",
-          },
-          task_id: {
-            type: "string",
-          },
-          tag_id: {
-            type: "integer",
-          },
-        },
-      },
-    },
   },
-  required: [
-    "name",
-    "user_id",
-    "created_at",
-    "list_id",
-    "status_id",
-    "priority_id",
-  ],
+  // required: [
+  //   "name",
+  //   "user_id",
+  //   "created_at",
+  //   "list_id",
+  //   "status_id",
+  //   "priority_id",
+  // ],
   additionalProperties: true,
 };
 
@@ -109,7 +73,8 @@ export const listSchema = {
       type: "string",
     },
   },
-  required: ["name"],
+  // required: ["name"],
+  additionalProperties: true,
 };
 
 export const statusSchema = {
@@ -126,7 +91,8 @@ export const statusSchema = {
       type: "string",
     },
   },
-  required: ["text"],
+  // required: ["text"],
+  additionalProperties: true,
 };
 
 export const prioritySchema = {
@@ -143,72 +109,92 @@ export const prioritySchema = {
       type: "string",
     },
   },
-  required: ["text"],
+  // required: ["text"],
+  additionalProperties: true,
 };
 
-const data = {
-  data: {
-    todos: [
-      {
-        id: "ba5da36a-9044-4cd7-a521-6a6ab6380a3a",
-        name: "Solve Targil 1",
-        status_id: 1,
-        created_at: "2021-01-26T08:54:34.533207+00:00",
-        updated_at: "2021-01-26T08:54:34.533207",
-        priority_id: 4,
-        list_id: 1,
-        user_id: "1",
-        due: "2021-01-27T08:54:34.533207",
-        duration: "02:00:00",
-        notes: "check",
-        reminder: "01:00:00",
-        scheduled: "2021-01-26",
-      },
-      {
-        id: "b32716b5-e98f-429e-9191-4b10ab57affd",
-        name: "Solve Targil 1",
-        status_id: 1,
-        created_at: "2021-01-26T08:55:01.98027+00:00",
-        updated_at: "2021-01-26T08:55:01.98027",
-        priority_id: 4,
-        list_id: 2,
-        user_id: "1",
-        due: "2021-01-27T08:55:01.98027",
-        duration: "02:00:00",
-        notes: "check",
-        reminder: "01:00:00",
-        scheduled: "2021-01-26",
-      },
-      {
-        id: "95e67cb1-a960-47de-bebe-79e2f0f9d44a",
-        name: "Solve Targil 1",
-        status_id: 1,
-        created_at: "2021-01-26T08:55:19.736364+00:00",
-        updated_at: "2021-01-26T08:55:19.736364",
-        priority_id: 4,
-        list_id: 3,
-        user_id: "1",
-        due: "2021-01-27T08:55:19.736364",
-        duration: "02:00:00",
-        notes: "check",
-        reminder: "01:00:00",
-        scheduled: "2021-01-26",
-      },
-      {
-        id: "ae7c7bfd-c8ee-496c-93e6-3c8529cae5e0",
-        name: "Solve Targil 1",
-        status_id: 1,
-        created_at: "2021-01-26T08:55:25.71512+00:00",
-        updated_at: "2021-01-26T08:55:25.71512",
-        priority_id: 4,
-        list_id: 4,
-        user_id: "1",
-        due: "2021-01-27T08:55:25.71512",
-        duration: "02:00:00",
-        notes: "check",
-        reminder: "01:00:00",
-        scheduled: "2021-01-26",
-      },
-    ],
+export const taskTagsSchema = {
+  title: "task tags schema",
+  description: "task tags schema",
+  version: 0,
+  type: "object",
+  properties: {
+    id: {
+      type: "string",
+      primary: true,
+    },
+    task_id: {
+      type: "string",
+      ref: "todos",
+    },
+    tag_id: {
+      type: "string",
+      ref: "tags",
+    },
   },
+  // required: ["task_id", "tag_id"],
+  additionalProperties: true,
+};
+
+export const tagsMasterSchema = {
+  title: "tags master schema",
+  description: "tags master schema",
+  version: 0,
+  type: "object",
+  properties: {
+    id: {
+      type: "string",
+    },
+    task_id: {
+      type: "string",
+      ref: "todos",
+    },
+    text: {
+      type: "string",
+    },
+  },
+  // required: ["task_id", "text"],
+  additionalProperties: true,
+};
+
+export const tagsSchema = {
+  title: "tags schema",
+  description: "tags schema",
+  version: 0,
+  type: "object",
+  properties: {
+    id: {
+      type: "string",
+      primary: true,
+    },
+    text: {
+      type: "string",
+    },
+  },
+  // required: ["text"],
+  additionalProperties: true,
+};
+
+export const subtaskSchema = {
+  title: "subtasks schema",
+  description: "subtasks schema",
+  version: 0,
+  type: "object",
+  properties: {
+    id: {
+      type: "string",
+      primary: true,
+    },
+    task_id: {
+      type: "string",
+      ref: "todos",
+    },
+    name: {
+      type: "string",
+    },
+    done: {
+      type: "boolean",
+    },
+  },
+  additionalProperties: true,
 };

@@ -1,31 +1,22 @@
-import { useDispatch } from "react-redux";
-import { actions } from "../../redux/store";
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { List, Checkbox } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useParams } from "react-router-dom";
+import { useRxData } from "rxdb-hooks";
 
-const Subtasks = ({ todoList, taskId }) => {
+const Subtasks = ({ todo }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const { listId } = useParams();
-  const subtasks = todoList.data[taskId].subtasks;
+  const { result: subtasks } = useRxData("subtasks", (collection) =>
+    collection.find().where("task_id").equals(todo.id)
+  );
 
-  const handleCheckboxChange = (index) => (event) => {
-    dispatch(
-      actions.updateSubtaskDone({
-        listId: listId,
-        taskId: taskId,
-        subtaskId: index,
-        done: event.target.checked,
-      })
-    );
+  const handleChange = (subtask) => async (event) => {
+    await subtask.atomicUpdate((item) => (item.done = event.target.checked));
   };
 
   return (
     <List component="div" disablePadding>
       {subtasks.map((subtask, index) => {
-        const id = `${taskId}-${index}`;
+        const id = `${index}-${subtask.name}`;
         return (
           <ListItem className={classes.nestedSubtask} key={id}>
             <ListItemIcon>
@@ -33,7 +24,7 @@ const Subtasks = ({ todoList, taskId }) => {
                 edge="start"
                 checked={subtask.done}
                 color="primary"
-                onChange={handleCheckboxChange(index)}
+                onChange={handleChange(subtask)}
               />
             </ListItemIcon>
             <ListItemText primary={subtask.name} />

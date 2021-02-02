@@ -9,14 +9,17 @@ import TimeTable from "./TimeTable";
 import Priority from "./Priority";
 import FooterBar from "./FooterBar";
 import Tags from "./Tags";
-import { status } from "../../data/data";
+// import { status } from "../../data/data";
 import EditableSubtasks from "./EditableSubtasks";
+import { useRxData } from "rxdb-hooks";
+import * as R from "ramda";
 
 const Task = ({ task }) => {
   const classes = useStyles();
 
-  const tags = useSelector((state) => state.tags);
-  const todos = useSelector((state) => state.todos);
+  const { result: status } = useRxData("status", (collection) =>
+    collection.find()
+  );
 
   // form validation rules
   const validationSchema = yup.object().shape({
@@ -58,13 +61,13 @@ const Task = ({ task }) => {
           inputRef={register({ required: true })}
         >
           {status.map((s) => (
-            <option key={s} value={s}>
-              {s}
+            <option key={s} value={s.id}>
+              {s.text}
             </option>
           ))}
         </TextField>
         <Divider />
-        <EditableSubtasks control={control} />
+        <EditableSubtasks control={control} task={task} />
         <Divider />
         <Priority control={control} taskPriority={task.priority} />
         <Divider />
@@ -80,16 +83,11 @@ const Task = ({ task }) => {
           inputRef={register}
         />
         <Divider />
-        <Tags control={control} tags={tags} defaultTags={task.tags} />
+        <Tags control={control} defaultTags={task.tags} />
         <Divider />
         <TimeTable register={register} task={task} />
       </form>
-      <FooterBar
-        handleSubmit={handleSubmit}
-        task={task}
-        tags={tags}
-        todos={todos}
-      />
+      <FooterBar handleSubmit={handleSubmit} task={task} />
     </div>
   );
 };

@@ -5,17 +5,15 @@ import { SubdirectoryArrowRight, Close, Check } from "@material-ui/icons";
 import { useFieldArray, Controller } from "react-hook-form";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch } from "react-redux";
-import { actions } from "../../redux/store";
 import { useParams } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
-const EditableSubtasks = ({ control }) => {
+const EditableSubtasks = ({ control, task }) => {
   const [clicked, setClicked] = useState(false);
   const [subtask, setSubtask] = useState("");
 
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const { listId, taskId } = useParams();
+  const { taskId } = useParams();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -25,20 +23,19 @@ const EditableSubtasks = ({ control }) => {
   const handleConfirm = () => {
     setClicked(false);
     if (subtask) {
-      append({ name: subtask, done: false });
+      taskId
+        ? append({ id: uuidv4(), name: subtask, done: false })
+        : append({
+            id: uuidv4(),
+            name: subtask,
+            done: false,
+          });
       setSubtask("");
     }
   };
 
-  const handleCheckboxChange = (index) => (event) => {
-    dispatch(
-      actions.updateSubtaskDone({
-        listId: listId,
-        taskId: taskId,
-        subtaskId: index,
-        done: event.target.checked,
-      })
-    );
+  const handleChange = (subtask) => async (event) => {
+    await subtask.atomicUpdate((item) => (item.done = event.target.checked));
   };
 
   const handleKeyPress = (e) => {
@@ -86,7 +83,7 @@ const EditableSubtasks = ({ control }) => {
                       edge="start"
                       checked={subtask.done}
                       color="primary"
-                      onChange={handleCheckboxChange(index)}
+                      onChange={handleChange(subtask)}
                     />
                   </ListItemIcon>
                 )}
@@ -127,31 +124,3 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default EditableSubtasks;
-
-// <Controller
-//   name="subtasks"
-//   control={props.control}
-//   render={({ onChange, value }) => (
-//     <List onChange={onChange}>
-//       {tempSubtasks.map((subtask, index) => {
-//         return (
-//           <ListItem key={index.toString()}>
-//             <ListItemText primary={subtask.name} />
-//             <ListItemSecondaryAction>
-//               <IconButton edge="end" onClick={handleCancle(index)}>
-//                 <Close />
-//               </IconButton>
-//             </ListItemSecondaryAction>
-//           </ListItem>
-//         );
-//       })}
-//       {clicked ? newSubtask : ""}
-//       <ListItem onClick={() => setClicked(true)} key="addSubtask">
-//         <ListItemIcon>
-//           <SubdirectoryArrowRight />
-//         </ListItemIcon>
-//         <ListItemText primary="Add Subtask" />
-//       </ListItem>
-//     </List>
-//   )}
-// />

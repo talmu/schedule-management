@@ -1,5 +1,4 @@
 import { formatISO } from "date-fns";
-import { status, priority } from "../data/data";
 import Task from "./../features/Task/Task";
 
 const AddTask = () => {
@@ -8,14 +7,14 @@ const AddTask = () => {
 
   const task = {
     name: "",
-    status: status[0],
-    priority: priority[3],
+    status: "1",
+    priority: "4",
     notes: "",
     scheduled: formattedDate,
     duration: "02:00",
     reminder: "00:00",
-    tags: [],
     subtasks: [],
+    tags: [],
   };
   return <Task key="new-item" task={task} />;
 };

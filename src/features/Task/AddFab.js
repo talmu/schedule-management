@@ -6,13 +6,16 @@ import { makeStyles } from "@material-ui/core/styles";
 const AddFab = () => {
   const classes = useStyles();
   const history = useHistory();
+
   return (
     <Fab
       key="fab-add"
       color="primary"
       aria-label="add"
       className={classes.fab}
-      onClick={() => history.push("/add-task")}
+      onClick={() => {
+        history.push("/add-task");
+      }}
     >
       <Add />
     </Fab>

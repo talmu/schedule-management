@@ -1,76 +1,54 @@
 import { createRxDatabase, addRxPlugin, removeRxDatabase } from "rxdb";
-import { todoSchema, prioritySchema, statusSchema, listSchema } from "./Schema";
-// import { RxDBSchemaCheckPlugin } from "rxdb/plugins/schema-check";
-// import { RxDBErrorMessagesPlugin } from "rxdb/plugins/error-messages";
-// import { RxDBDevModePlugin } from "rxdb/plugins/dev-mode";
+import {
+  todoSchema,
+  prioritySchema,
+  statusSchema,
+  listSchema,
+  taskTagsSchema,
+  tagsMasterSchema,
+  tagsSchema,
+  subtaskSchema,
+} from "./Schema";
 import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder";
 import { RxDBValidatePlugin } from "rxdb/plugins/validate";
 import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql";
 import { SubscriptionClient } from "subscriptions-transport-ws";
+import { subscriptionQuery, pushQuery, pullQuery, variable } from "./Queries";
+import { formatISO } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
 
-// addRxPlugin(RxDBDevModePlugin);
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBValidatePlugin);
 addRxPlugin(RxDBReplicationGraphQLPlugin);
 addRxPlugin(require("pouchdb-adapter-idb"));
 
-// Replace the below with the url to your hasura GraphQL API
 const syncURL = "http://localhost:8080/v1/graphql";
 
 const batchSize = 5;
-const pullQueryBuilder = (doc) => {
+
+const pullQueryBuilder = (collection) => (doc) => {
   if (!doc) {
-    doc = {
-      id: "",
-      updated_at: new Date(0).toUTCString(),
-    };
+    collection === "todos"
+      ? (doc = {
+          id: "",
+          updated_at: new Date(0).toUTCString(),
+        })
+      : (doc = {
+          id: "",
+        });
   }
-  const query = `{
-            todos(
-                where: {
-                  updated_at: {_gt: "${doc.updated_at}"},
-                },
-                limit: ${batchSize},
-                order_by: [{updated_at: asc}, {id: asc}]
-            ) {
-                id
-                name
-                status_id
-                created_at
-                updated_at
-                priority_id
-                list_id
-                user_id
-                due
-                duration
-                notes
-                reminder
-                scheduled
-            }
-        }`;
+  const query = pullQuery(collection, batchSize, doc);
+
   return {
     query,
     variables: {},
   };
 };
 
-const pushQueryBuilder = (doc) => {
-  const query = `
-        mutation InsertTodo($todo: [todos_insert_input!]!) {
-            insert_todos(
-                objects: $todo,
-                on_conflict: {
-                    constraint: todos_pkey,
-                    update_columns: [name, created_at, due, duration, list_id, notes, priority_id, reminder, scheduled, status_id, updated_at]
-                }){
-                returning {
-                  id
-                }
-              }
-       }
-    `;
+const pushQueryBuilder = (collection) => (doc) => {
+  const query = pushQuery(collection);
   const variables = {
-    todo: doc,
+    [variable]: doc,
   };
   return {
     query,
@@ -78,22 +56,17 @@ const pushQueryBuilder = (doc) => {
   };
 };
 
-const setupGraphQLReplication = async (db) => {
-  const replicationState = db.todos.syncGraphQL({
+const setupGraphQLReplication = async (db, collection) => {
+  const replicationState = db[collection].syncGraphQL({
     url: syncURL,
     push: {
       batchSize,
-      queryBuilder: pushQueryBuilder,
+      queryBuilder: pushQueryBuilder(collection),
     },
     pull: {
-      queryBuilder: pullQueryBuilder,
+      queryBuilder: pullQueryBuilder(collection),
     },
     live: true,
-    /**
-     * Because the websocket is used to inform the client
-     * when something has changed,
-     * we can set the liveIntervall to a high value
-     */
     liveInterval: 1000 * 60 * 10, // 10 minutes
     deletedFlag: "deleted",
   });
@@ -105,8 +78,7 @@ const setupGraphQLReplication = async (db) => {
   return replicationState;
 };
 
-const setupGraphQLSubscription = (replicationState) => {
-  // Change this url to point to your hasura graphql url
+const setupGraphQLSubscription = (replicationState, collection) => {
   const endpointURL = "ws://localhost:8080/v1/graphql";
   const wsClient = new SubscriptionClient(endpointURL, {
     reconnect: true,
@@ -125,13 +97,7 @@ const setupGraphQLSubscription = (replicationState) => {
     lazy: true,
   });
 
-  const query = `subscription onTodoChanged {
-          todos {
-              id
-              status_id
-              name
-          }       
-      }`;
+  const query = subscriptionQuery(collection);
 
   const ret = wsClient.request({ query });
 
@@ -150,9 +116,12 @@ const setupGraphQLSubscription = (replicationState) => {
   return wsClient;
 };
 
-export const GraphQLReplicator = async (db) => {
-  const replicationState = await setupGraphQLReplication(db);
-  const subscriptionClient = setupGraphQLSubscription(replicationState);
+const GraphQLReplicator = async (collectionName, db) => {
+  const replicationState = await setupGraphQLReplication(db, collectionName);
+  const subscriptionClient = setupGraphQLSubscription(
+    replicationState,
+    collectionName
+  );
 
   return () => {
     replicationState.cancel();
@@ -160,8 +129,27 @@ export const GraphQLReplicator = async (db) => {
   };
 };
 
+export const RemoteDbReplication = (db) => {
+  const cancellations = [];
+  const collections = [
+    "lists",
+    "status",
+    "priority",
+    "tags",
+    "todos",
+    "task_tags",
+    "subtasks",
+  ];
+
+  collections.map((collection) =>
+    cancellations.push(GraphQLReplicator(collection, db))
+  );
+
+  return () => cancellations.map((cancle) => cancle());
+};
+
 export const initializeDB = async () => {
-  // await removeRxDatabase("todos_rxdb", "idb");
+  await removeRxDatabase("todos_rxdb", "idb");
 
   const db = await createRxDatabase({
     name: "todos_rxdb",
@@ -185,7 +173,28 @@ export const initializeDB = async () => {
     lists: {
       schema: listSchema,
     },
+    task_tags: {
+      schema: taskTagsSchema,
+    },
+    tags_master: {
+      schema: tagsMasterSchema,
+    },
+    tags: {
+      schema: tagsSchema,
+    },
+    subtasks: {
+      schema: subtaskSchema,
+    },
   });
+
+  db.todos.preSave(function (plainData, rxDocument) {
+    plainData.updated_at = formatISO(new Date());
+  }, true);
+
+  db.todos.preInsert(function (plainData) {
+    plainData.id = uuidv4();
+    plainData.created_at = formatISO(new Date());
+  }, true);
 
   return db;
 };
