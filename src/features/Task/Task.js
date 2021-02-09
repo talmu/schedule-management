@@ -1,23 +1,25 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider } from "@material-ui/core";
-import { TextField } from "@material-ui/core";
+import { Divider, Select, TextField } from "@material-ui/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useSelector } from "react-redux";
 import TimeTable from "./TimeTable";
 import Priority from "./Priority";
 import FooterBar from "./FooterBar";
-import Tags from "./Tags";
-// import { status } from "../../data/data";
-import EditableSubtasks from "./EditableSubtasks";
+import AddModeTags from "./AddModeTags";
+import EditModeTags from "./EditModeTags";
+import AddModeSubtasks from "./AddModeSubtasks";
+import EditModeSubtasks from "./EditModeSubtasks";
 import { useRxData } from "rxdb-hooks";
-import * as R from "ramda";
+import { useParams } from "react-router-dom";
+import Loading from "../../components/Loading";
+// import * as R from "ramda";
 
-const Task = ({ task }) => {
+const Task = ({ task, subtasks }) => {
+  const { taskId } = useParams();
   const classes = useStyles();
 
-  const { result: status } = useRxData("status", (collection) =>
+  const { result: status, isFetching } = useRxData("status", (collection) =>
     collection.find()
   );
 
@@ -28,12 +30,14 @@ const Task = ({ task }) => {
 
   const { control, register, handleSubmit, errors } = useForm({
     defaultValues: {
-      subtasks: task.subtasks,
+      subtasks: subtasks,
     },
     resolver: yupResolver(validationSchema),
   });
 
-  return (
+  return isFetching ? (
+    <Loading />
+  ) : (
     <div style={{ width: "88%" }} className={classes.marginLeft}>
       <form className={classes.root}>
         <TextField
@@ -49,27 +53,31 @@ const Task = ({ task }) => {
         <p>{errors.name?.message}</p>
         <TextField
           key="select"
-          name="status"
+          name="status_id"
           label="Status"
           variant="outlined"
           fullWidth
-          defaultValue={task.status}
           select
+          defaultValue={task.status_id}
           SelectProps={{
             native: true,
           }}
           inputRef={register({ required: true })}
         >
           {status.map((s) => (
-            <option key={s} value={s.id}>
+            <option key={s.id} value={s.id}>
               {s.text}
             </option>
           ))}
         </TextField>
         <Divider />
-        <EditableSubtasks control={control} task={task} />
+        {taskId ? (
+          <EditModeSubtasks subtasks={subtasks} />
+        ) : (
+          <AddModeSubtasks control={control} />
+        )}
         <Divider />
-        <Priority control={control} taskPriority={task.priority} />
+        <Priority control={control} taskPriority={task.priority_id} />
         <Divider />
         <TextField
           key="task-notes"
@@ -83,7 +91,7 @@ const Task = ({ task }) => {
           inputRef={register}
         />
         <Divider />
-        <Tags control={control} defaultTags={task.tags} />
+        {taskId ? <EditModeTags /> : <AddModeTags control={control} />}
         <Divider />
         <TimeTable register={register} task={task} />
       </form>

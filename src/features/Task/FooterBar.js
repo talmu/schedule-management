@@ -1,33 +1,30 @@
-import { v4 as uuidv4 } from "uuid";
 import { Delete, Close, Save } from "@material-ui/icons";
 import { AppBar, Toolbar, IconButton, Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory, useParams } from "react-router-dom";
 import { useRxData, useRxDocument, useRxCollection } from "rxdb-hooks";
 import * as R from "ramda";
-import { formatISO } from "date-fns";
 
-const FooterBar = ({ handleSubmit, task }) => {
+const FooterBar = ({ handleSubmit, document }) => {
   const classes = useStyles();
-  const { listId, taskId, newTask } = useParams();
+  const { listId, taskId } = useParams();
   const history = useHistory();
 
   const { result: tags } = useRxData("tags", (collection) => collection.find());
+  const subtasksCollection = useRxCollection("subtasks");
+
   const { result: subtasks } = useRxData("subtasks", (collection) =>
     collection.find().where("task_id").equals(taskId)
   );
+
   const { result: task_tags } = useRxData("task_tags", (collection) =>
     collection.find().where("task_id").equals(taskId)
   );
 
-  const todos = useRxCollection("todos");
-
-  const document = useRxDocument("todos", taskId);
-
   const handleDelete = async () => {
-    await document.remove();
     subtasks.map(async (subtask) => await subtask.remove());
     task_tags.map(async (task_tag) => await task_tag.remove());
+    await document.remove();
     console.log(document.deleted);
   };
 
@@ -36,33 +33,33 @@ const FooterBar = ({ handleSubmit, task }) => {
   };
 
   const onSubmit = async (data) => {
-    document
-      ? await document.atomicUpdate((oldData) => {
-          oldData.name = data.name;
-          oldData.updated_at = formatISO(new Date());
-          oldData.status_id = data.status;
-          oldData.priority_id = data.priority;
-          oldData.notes = data.notes;
-          oldData.scheduled = data.scheduled;
-          oldData.duration = data.duration;
-          oldData.due = data.due;
-          oldData.reminder = data.reminder;
-        })
-      : await todos.insert({
-          id: newTask,
-          name: data.name,
-          updated_at: formatISO(new Date()),
-          status_id: data.status,
-          priority_id: data.priority,
-          notes: data.notes,
-          scheduled: data.scheduled,
-          duration: data.duration,
-          due: data.due,
-          reminder: data.reminder,
-        });
+    // await document.save();
 
-    console.log(todos[listId]);
-    console.log(tags);
+    console.log(data);
+    console.log(document);
+
+    // if (!taskId) {
+    //   data.tags.map((task_tag) =>
+    //     task_tags.atomicUpsert({
+    //       task_id: document.id,
+    //       tag_id: task_tag.tag_id,
+    //     })
+    //   );
+
+    //   data.tags.map(async (tag) => {
+    //     const newTag = { id: tag.tag_id, text: tag.text };
+    //     if (!R.contains(newTag, tags)) await tags.atomicUpsert(newTag);
+    //   });
+
+    //   data.subtasks.map(
+    //     async (subtask) =>
+    //       await subtasksCollection.atomicUpsert({
+    //         task_id: document.id,
+    //         name: subtask.name,
+    //         done: subtask.done,
+    //       })
+    //   );
+    // }
   };
 
   const deleteIcon = (

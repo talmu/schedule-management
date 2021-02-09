@@ -1,4 +1,4 @@
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { Add } from "@material-ui/icons";
 import { Fab } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const AddFab = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { listId } = useParams();
 
   return (
     <Fab
@@ -14,7 +15,7 @@ const AddFab = () => {
       aria-label="add"
       className={classes.fab}
       onClick={() => {
-        history.push("/add-task");
+        history.push(`/add-task/${listId}`);
       }}
     >
       <Add />

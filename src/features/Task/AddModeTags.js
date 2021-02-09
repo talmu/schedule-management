@@ -3,8 +3,10 @@ import { Controller } from "react-hook-form";
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 import { useRxData } from "rxdb-hooks";
+import { useParams } from "react-router-dom";
+import * as R from "ramda";
 
-const Tags = ({ control, defaultTags }) => {
+const AddModeTags = ({ control }) => {
   const filter = createFilterOptions();
   const classes = useStyles();
 
@@ -19,12 +21,16 @@ const Tags = ({ control, defaultTags }) => {
         <Controller
           name="tags"
           control={control}
-          defaultValue={defaultTags}
+          defaultValue={[]}
           render={({ onChange, value }) => (
             <Autocomplete
               multiple
               id="tagsCombobox"
-              onChange={(e, value) => onChange(value)}
+              onChange={(e, newValue) => {
+                newValue[0].inputValue
+                  ? onChange([{ text: newValue[0].inputValue }])
+                  : onChange(newValue);
+              }}
               selectOnFocus
               handleHomeEndKeys
               clearOnBlur
@@ -40,13 +46,18 @@ const Tags = ({ control, defaultTags }) => {
                 const filtered = filter(options, params);
 
                 // Suggest the creation of a new value
-                if (params.inputValue !== "") {
-                  filtered.push({
-                    inputValue: params.inputValue,
-                    text: `Create "${params.inputValue}"`,
-                  });
+                if (params.inputValue !== "" && filtered.length === 0) {
+                  const isExist = R.contains(
+                    { text: params.inputValue },
+                    value
+                  );
+                  if (!isExist) {
+                    filtered.push({
+                      inputValue: params.inputValue,
+                      text: `Create "${params.inputValue}"`,
+                    });
+                  }
                 }
-
                 return filtered;
               }}
               filterSelectedOptions
@@ -74,4 +85,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default Tags;
+export default AddModeTags;

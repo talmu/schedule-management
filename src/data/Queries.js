@@ -42,6 +42,14 @@ export const subscriptionQuery = (collection) => {
                       tag_id
                     }
                   }`,
+    tags_master: `subscription onTagsMasterChanged {
+                    tags_master {
+                      id
+                      task_id
+                      tag_id
+                      text
+                    }
+                  }`,
     tags: `subscription onTagsChanged {
             tags {
               id
@@ -120,10 +128,25 @@ export const pushQuery = (collection) => {
                     update_columns: []
                 }){
                 returning {
+                  id
                   task_id
                 }
               }
           }`,
+
+    tags_master: `mutation InsertTagMaster($tag_master: [task_tags_insert_input!]!) {
+                  insert_task_tags(
+                    objects: $task_tag,
+                    on_conflict: {
+                        constraint: task_tags_pkey,
+                        update_columns: []
+                    }){
+                    returning {
+                      id
+                      task_id
+                    }
+                  }
+                }`,
     tags: `mutation InsertTag($tag: [tags_insert_input!]!) {
             insert_tags(
               objects: $tag,
@@ -202,6 +225,14 @@ export const pullQuery = (collection, batchSize, doc) => {
                     tag_id
                   }
               }`,
+    tags_master: `{
+                    tags_master{
+                      id
+                      task_id
+                      tag_id
+                      text
+                    }
+                  }`,
     tags: `{
             tags{
               id
@@ -227,6 +258,7 @@ export const variable = (collection) => {
     priority: "priority",
     status: "status",
     task_tags: "task_tag",
+    tags_master: "tag_master",
     tags: "tag",
     subtasks: "subtask",
   };

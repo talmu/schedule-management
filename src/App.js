@@ -29,11 +29,11 @@ const App = () => {
         <Loading />
       ) : (
         <RxDBProvider db={db}>
-          <StoreProvider store={store}>
-            <Template>
-              <Router history={history} />
-            </Template>
-          </StoreProvider>
+          {/* <StoreProvider store={store}> */}
+          <Template>
+            <Router history={history} />
+          </Template>
+          {/* </StoreProvider> */}
         </RxDBProvider>
       )}
     </BrowserRouter>

@@ -1,22 +1,39 @@
-import { formatISO } from "date-fns";
+import { useRxCollection } from "rxdb-hooks";
 import Task from "./../features/Task/Task";
+import { formatISO } from "date-fns";
+import Loading from "../components/Loading";
+import { useParams } from "react-router-dom";
 
 const AddTask = () => {
-  const today = new Date();
-  const formattedDate = formatISO(today, { representation: "date" });
+  const { listId } = useParams();
+  const todos = useRxCollection("todos");
+  console.log(todos);
 
-  const task = {
-    name: "",
-    status: "1",
-    priority: "4",
-    notes: "",
-    scheduled: formattedDate,
-    duration: "02:00",
-    reminder: "00:00",
-    subtasks: [],
-    tags: [],
-  };
-  return <Task key="new-item" task={task} />;
+  let tempTask;
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const formattedDateTime = formatISO(tomorrow).slice(0, -9);
+
+  todos
+    ? (tempTask = todos.newDocument({
+        name: "",
+        status_id: "1",
+        priority_id: "4",
+        list_id: listId,
+        notes: "",
+        reminder: "00:00",
+        duration: "02:00",
+        scheduled: formatISO(today, { representation: "date" }),
+        due: formattedDateTime,
+      }))
+    : (tempTask = {});
+
+  return todos ? (
+    <Task key="new-item" task={tempTask} subtasks={[]} />
+  ) : (
+    <Loading />
+  );
 };
 
 export default AddTask;

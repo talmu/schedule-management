@@ -5,15 +5,12 @@ import { SubdirectoryArrowRight, Close, Check } from "@material-ui/icons";
 import { useFieldArray, Controller } from "react-hook-form";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 
-const EditableSubtasks = ({ control, task }) => {
+const AddModeSubtasks = ({ control }) => {
   const [clicked, setClicked] = useState(false);
-  const [subtask, setSubtask] = useState("");
+  const [name, setName] = useState("");
 
   const classes = useStyles();
-  const { taskId } = useParams();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -22,46 +19,27 @@ const EditableSubtasks = ({ control, task }) => {
 
   const handleConfirm = () => {
     setClicked(false);
-    if (subtask) {
-      taskId
-        ? append({ id: uuidv4(), name: subtask, done: false })
-        : append({
-            id: uuidv4(),
-            name: subtask,
-            done: false,
-          });
-      setSubtask("");
+    if (name) {
+      append({ name: name, done: false });
     }
-  };
-
-  const handleChange = (subtask) => async (event) => {
-    await subtask.atomicUpdate((item) => (item.done = event.target.checked));
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") handleConfirm();
   };
 
   const newSubtask = (
     <div>
       <TextField
         name="newSubtask"
-        className={classes.marginTopBottom}
+        className={classes.margin}
         label="Subtask"
-        onChange={(e) => setSubtask(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onChange={(e) => setName(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") handleConfirm();
+        }}
         defaultValue=""
       ></TextField>
       <IconButton edge="end" onClick={handleConfirm}>
         <Check />
       </IconButton>
-      <IconButton
-        edge="end"
-        onClick={() => {
-          setClicked(false);
-          setSubtask("");
-        }}
-      >
+      <IconButton edge="end" onClick={() => setClicked(false)}>
         <Close />
       </IconButton>
     </div>
@@ -77,13 +55,13 @@ const EditableSubtasks = ({ control, task }) => {
                 name={`subtasks[${index}].done`}
                 control={control}
                 defaultValue={subtask.done}
-                render={() => (
+                render={({ onChange, value }) => (
                   <ListItemIcon>
                     <Checkbox
                       edge="start"
-                      checked={subtask.done}
-                      color="primary"
-                      onChange={handleChange(subtask)}
+                      checked={value}
+                      color="secondary"
+                      onChange={(e) => onChange(e.target.checked)}
                     />
                   </ListItemIcon>
                 )}
@@ -105,7 +83,13 @@ const EditableSubtasks = ({ control, task }) => {
       </List>
       {clicked ? newSubtask : ""}
       <List>
-        <ListItem onClick={() => setClicked(true)} key="addSubtask">
+        <ListItem
+          onClick={() => {
+            setClicked(true);
+            setName("");
+          }}
+          key="addSubtask"
+        >
           <ListItemIcon>
             <SubdirectoryArrowRight />
           </ListItemIcon>
@@ -117,10 +101,11 @@ const EditableSubtasks = ({ control, task }) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  marginTopBottom: {
-    marginTop: theme.spacing(2),
+  margin: {
+    marginLeft: theme.spacing(2),
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(3),
   },
 }));
 
-export default EditableSubtasks;
+export default AddModeSubtasks;

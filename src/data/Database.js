@@ -138,6 +138,7 @@ export const RemoteDbReplication = (db) => {
     "tags",
     "todos",
     "task_tags",
+    "tags_master",
     "subtasks",
   ];
 
@@ -192,8 +193,17 @@ export const initializeDB = async () => {
   }, true);
 
   db.todos.preInsert(function (plainData) {
+    const today = new Date();
     plainData.id = uuidv4();
-    plainData.created_at = formatISO(new Date());
+    plainData.created_at = formatISO(today);
+  }, true);
+
+  db.subtasks.preInsert(function (plainData) {
+    plainData.id = uuidv4();
+  }, true);
+
+  db.task_tags.preInsert(function (plainData) {
+    plainData.id = uuidv4();
   }, true);
 
   return db;

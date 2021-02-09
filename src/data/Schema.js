@@ -144,10 +144,15 @@ export const tagsMasterSchema = {
   properties: {
     id: {
       type: "string",
+      primary: true,
     },
     task_id: {
       type: "string",
       ref: "todos",
+    },
+    tag_id: {
+      type: "string",
+      ref: "tags",
     },
     text: {
       type: "string",

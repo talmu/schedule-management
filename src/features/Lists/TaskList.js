@@ -1,7 +1,7 @@
 import React from "react";
 import { List } from "@material-ui/core";
 import Item from "./Item";
-import { useTodoList } from "../../data/useTodoList";
+import { useTodoList } from "../../data/DBHooks";
 import Loading from "../../components/Loading";
 
 const TaskList = () => {

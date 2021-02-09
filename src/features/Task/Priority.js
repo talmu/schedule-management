@@ -7,6 +7,7 @@ const Priority = ({ control, taskPriority }) => {
   const { result: priority } = useRxData("priority", (collection) =>
     collection.find()
   );
+
   return (
     <FormControl component="fieldset">
       <Grid container spacing={1}>
@@ -14,7 +15,7 @@ const Priority = ({ control, taskPriority }) => {
           <FormLabel component="legend">Priority</FormLabel>
         </Grid>
         <Controller
-          name="priority"
+          name="priority_id"
           control={control}
           rules={{ required: true }}
           defaultValue={taskPriority}
@@ -25,11 +26,10 @@ const Priority = ({ control, taskPriority }) => {
               onChange={(e) => onChange(e.target.value)}
             >
               {priority.map((p) => {
-                const key = `${p.id}-${p.text}`;
                 return (
-                  <Grid item xs={3} key={key}>
+                  <Grid item xs={3} key={p.id}>
                     <FormControlLabel
-                      name={p.text}
+                      name={p.id}
                       value={p.id}
                       control={<Radio color="secondary" />}
                       label={p.text}
