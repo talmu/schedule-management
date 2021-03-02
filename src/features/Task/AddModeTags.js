@@ -2,15 +2,11 @@ import { TextField, Grid, InputLabel } from "@material-ui/core";
 import { Controller } from "react-hook-form";
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
-import { useRxData } from "rxdb-hooks";
-import { useParams } from "react-router-dom";
 import * as R from "ramda";
 
-const AddModeTags = ({ control }) => {
+const AddModeTags = ({ control, tags }) => {
   const filter = createFilterOptions();
   const classes = useStyles();
-
-  const { result: tags } = useRxData("tags", (collection) => collection.find());
 
   return (
     <Grid container>
@@ -26,10 +22,13 @@ const AddModeTags = ({ control }) => {
             <Autocomplete
               multiple
               id="tagsCombobox"
-              onChange={(e, newValue) => {
-                newValue[0].inputValue
-                  ? onChange([{ text: newValue[0].inputValue }])
-                  : onChange(newValue);
+              onChange={(e, newArray, reason) => {
+                if (reason === "select-option") {
+                  const newValue = newArray[newArray.length - 1].inputValue;
+                  if (newValue)
+                    newArray[newArray.length - 1] = { text: newValue };
+                }
+                onChange(newArray);
               }}
               selectOnFocus
               handleHomeEndKeys

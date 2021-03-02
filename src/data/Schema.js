@@ -17,9 +17,6 @@ export const todoSchema = {
     updated_at: {
       type: "string",
     },
-    user_id: {
-      type: "string",
-    },
     list_id: {
       type: "string",
       ref: "lists",
@@ -72,6 +69,9 @@ export const listSchema = {
     name: {
       type: "string",
     },
+    updated_at: {
+      type: "string",
+    },
   },
   // required: ["name"],
   additionalProperties: true,
@@ -90,6 +90,9 @@ export const statusSchema = {
     text: {
       type: "string",
     },
+    updated_at: {
+      type: "string",
+    },
   },
   // required: ["text"],
   additionalProperties: true,
@@ -106,6 +109,9 @@ export const prioritySchema = {
       primary: true,
     },
     text: {
+      type: "string",
+    },
+    updated_at: {
       type: "string",
     },
   },
@@ -131,34 +137,11 @@ export const taskTagsSchema = {
       type: "string",
       ref: "tags",
     },
+    updated_at: {
+      type: "string",
+    },
   },
   // required: ["task_id", "tag_id"],
-  additionalProperties: true,
-};
-
-export const tagsMasterSchema = {
-  title: "tags master schema",
-  description: "tags master schema",
-  version: 0,
-  type: "object",
-  properties: {
-    id: {
-      type: "string",
-      primary: true,
-    },
-    task_id: {
-      type: "string",
-      ref: "todos",
-    },
-    tag_id: {
-      type: "string",
-      ref: "tags",
-    },
-    text: {
-      type: "string",
-    },
-  },
-  // required: ["task_id", "text"],
   additionalProperties: true,
 };
 
@@ -173,6 +156,9 @@ export const tagsSchema = {
       primary: true,
     },
     text: {
+      type: "string",
+    },
+    updated_at: {
       type: "string",
     },
   },
@@ -199,6 +185,9 @@ export const subtaskSchema = {
     },
     done: {
       type: "boolean",
+    },
+    updated_at: {
+      type: "string",
     },
   },
   additionalProperties: true,

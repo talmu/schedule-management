@@ -1,36 +1,63 @@
 import { TextField, Grid, InputLabel } from "@material-ui/core";
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
-import { useRxData } from "rxdb-hooks";
 import { useParams } from "react-router-dom";
-import * as R from "ramda";
 import { v4 as uuidv4 } from "uuid";
+import { useEffect, useState } from "react";
+import { useTaskTags } from "../../data/DBHooks";
+import Loading from "../../components/Loading";
+import { useRxCollection } from "rxdb-hooks";
 
-const EditModeTags = () => {
+const EditModeTags = ({ tags }) => {
   const filter = createFilterOptions();
   const classes = useStyles();
   const { taskId } = useParams();
+  const [tagsText, setTags] = useState([]);
+  const [task_tags, isFetching] = useTaskTags(taskId);
 
-  const { result: tags } = useRxData("tags", (collection) => collection.find());
-  const { result: task_tags } = useRxData("task_tags", (collection) =>
-    collection.find().where("task_id").equals(taskId)
-  );
+  const tagsCollection = useRxCollection("tags");
+  const taskTagsCollection = useRxCollection("task_tags");
 
-  const tagsText = task_tags.map(async (task_tag) => {
-    const response = await task_tag.tag_id_;
-    let data = await response.json();
-    data = JSON.stringify(data);
-    data = JSON.parse(data);
-    return data;
-  });
+  useEffect(() => {
+    Promise.all(task_tags.map(async (task_tag) => await task_tag.tag_id_)).then(
+      setTags
+    );
+  }, [task_tags]);
 
-  const handleChange = (newValue) => async () => {
-    const tag_id = uuidv4();
-    await task_tags.atomicUpsert({ task_id: taskId, tag_id: tag_id });
-    await tags.atomicUpsert({ id: tag_id, text: newValue[0].inputValue });
+  const handleChange = async (newArray, reason) => {
+    console.log(newArray);
+    console.log(reason);
+    if (reason === "select-option") {
+      const newValue = newArray[newArray.length - 1];
+      console.log(newValue);
+      let tag_id;
+      if (newValue.inputValue) {
+        tag_id = uuidv4();
+        await tagsCollection.atomicUpsert({
+          id: tag_id,
+          text: newValue.inputValue,
+        });
+      } else tag_id = newValue.id;
+
+      await taskTagsCollection.atomicUpsert({
+        id: uuidv4(),
+        task_id: taskId,
+        tag_id: tag_id,
+      });
+    }
+    if (reason === "remove-option") {
+      const toBeRemove = task_tags.filter(
+        (tag) => newArray.indexOf(tag) === -1
+      );
+
+      console.log(toBeRemove);
+      await toBeRemove[0].remove();
+    }
   };
 
-  return (
+  return isFetching ? (
+    <Loading />
+  ) : (
     <Grid container>
       <Grid item xs={12} className={classes.marginBottom}>
         <InputLabel>Tags</InputLabel>
@@ -39,8 +66,7 @@ const EditModeTags = () => {
         <Autocomplete
           id="tagsCombobox"
           multiple
-          onChange={(e, newValue) => handleChange(newValue)}
-          defaultValue={task_tags}
+          onChange={(e, newArray, reason) => handleChange(newArray, reason)}
           selectOnFocus
           handleHomeEndKeys
           clearOnBlur
@@ -54,7 +80,6 @@ const EditModeTags = () => {
           }}
           filterOptions={(options, params) => {
             const filtered = filter(options, params);
-
             // Suggest the creation of a new value
             if (params.inputValue !== "" && filtered.length === 0) {
               const isExist = tagsText.filter(
@@ -74,7 +99,6 @@ const EditModeTags = () => {
           filterSelectedOptions
           freeSolo
           renderInput={(params) => {
-            console.log(params);
             return (
               <TextField
                 key="tag"

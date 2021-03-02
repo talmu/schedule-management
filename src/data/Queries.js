@@ -4,18 +4,24 @@ export const subscriptionQuery = (collection) => {
               lists {
                 id
                 name
+                updated_at
+                deleted
               }       
             }`,
     status: `subscription onStatusChanged {
               status {
                 id
                 text
+                updated_at
+                deleted
               }       
             }`,
     priority: `subscription onPriorityChanged {
                 priority {
                   id
                   text
+                  updated_at
+                  deleted
                 }       
               }`,
     todos: `subscription onTodoChanged {
@@ -32,7 +38,7 @@ export const subscriptionQuery = (collection) => {
                 scheduled
                 status_id
                 updated_at
-                user_id
+                deleted
               }       
             }`,
     task_tags: `subscription onTaskTagsChanged {
@@ -40,29 +46,26 @@ export const subscriptionQuery = (collection) => {
                       id
                       task_id
                       tag_id
-                    }
-                  }`,
-    tags_master: `subscription onTagsMasterChanged {
-                    tags_master {
-                      id
-                      task_id
-                      tag_id
-                      text
+                      updated_at
+                      deleted
                     }
                   }`,
     tags: `subscription onTagsChanged {
             tags {
               id
               text
+              updated_at
+              deleted
             }       
           }`,
-
     subtasks: `subscription onSubtasksChanged {
                 subtasks {
                   id
                   task_id
                   name
                   done
+                  updated_at
+                  deleted
                 }       
               }`,
   };
@@ -76,7 +79,7 @@ export const pushQuery = (collection) => {
                 objects: $list,
                 on_conflict: {
                     constraint: todo_lists_pkey,
-                    update_columns: [name]
+                    update_columns: [name, updated_at, deleted]
               }){
                 returning {
                   id
@@ -88,7 +91,7 @@ export const pushQuery = (collection) => {
                     objects: $status,
                     on_conflict: {
                         constraint: status_pkey,
-                        update_columns: [text]
+                        update_columns: [text, deleted, updated_at]
                     }){
                     returning {
                       id
@@ -100,7 +103,7 @@ export const pushQuery = (collection) => {
                       objects: $priority,
                       on_conflict: {
                           constraint: priority_pkey,
-                          update_columns: [text]
+                          update_columns: [text, deleted, updated_at]
                       }){
                       returning {
                         id
@@ -112,7 +115,7 @@ export const pushQuery = (collection) => {
                   objects: $todo,
                   on_conflict: {
                       constraint: todos_pkey,
-                      update_columns: [name, created_at, due, duration, list_id, notes, priority_id, reminder, scheduled, status_id, updated_at]
+                      update_columns: [name, due, duration, notes, priority_id, reminder, scheduled, status_id, updated_at, deleted]
                   }){
                   returning {
                     id
@@ -125,7 +128,7 @@ export const pushQuery = (collection) => {
                 objects: $task_tag,
                 on_conflict: {
                     constraint: task_tags_pkey,
-                    update_columns: []
+                    update_columns: [deleted,updated_at]
                 }){
                 returning {
                   id
@@ -133,26 +136,12 @@ export const pushQuery = (collection) => {
                 }
               }
           }`,
-
-    tags_master: `mutation InsertTagMaster($tag_master: [task_tags_insert_input!]!) {
-                  insert_task_tags(
-                    objects: $task_tag,
-                    on_conflict: {
-                        constraint: task_tags_pkey,
-                        update_columns: []
-                    }){
-                    returning {
-                      id
-                      task_id
-                    }
-                  }
-                }`,
     tags: `mutation InsertTag($tag: [tags_insert_input!]!) {
             insert_tags(
               objects: $tag,
               on_conflict: {
                   constraint: tags_pkey,
-                  update_columns: [text]
+                  update_columns: [text, deleted, updated_at]
               }){
               returning {
                 id
@@ -164,7 +153,7 @@ export const pushQuery = (collection) => {
                   objects: $subtask,
                   on_conflict: {
                       constraint: subtasks_pkey,
-                      update_columns: [name, done]
+                      update_columns: [name, done, deleted, updated_at]
                   }){
                   returning {
                     id
@@ -178,21 +167,45 @@ export const pushQuery = (collection) => {
 export const pullQuery = (collection, batchSize, doc) => {
   const queries = {
     lists: `{
-              lists{
+              lists(
+                where: {
+                  updated_at: {_gt: "${doc.updated_at}"},
+                },
+                limit: ${batchSize},
+                order_by: [{updated_at: asc}, {id: asc}]
+              ){
                 id
                 name
+                updated_at
+                deleted
               }
           }`,
     status: `{
-              status{
+              status(
+                where: {
+                  updated_at: {_gt: "${doc.updated_at}"},
+                },
+                limit: ${batchSize},
+                order_by: [{updated_at: asc}, {id: asc}]
+              ){
                 id
                 text
+                updated_at
+                deleted
               }
             }`,
     priority: `{
-                  priority{
+                  priority(
+                    where: {
+                      updated_at: {_gt: "${doc.updated_at}"},
+                    },
+                    limit: ${batchSize},
+                    order_by: [{updated_at: asc}, {id: asc}]
+                  ){
                     id
                     text
+                    updated_at
+                    deleted
                   }
               }`,
     todos: `{
@@ -210,41 +223,58 @@ export const pullQuery = (collection, batchSize, doc) => {
                   updated_at
                   priority_id
                   list_id
-                  user_id
                   due
                   duration
                   notes
                   reminder
                   scheduled
+                  deleted
               }
             }`,
     task_tags: `{
-                  task_tags{
+                  task_tags(
+                    where: {
+                      updated_at: {_gt: "${doc.updated_at}"},
+                    },
+                    limit: ${batchSize},
+                    order_by: [{updated_at: asc}, {id: asc}]
+                  )
+                    {
                     id
                     task_id
                     tag_id
+                    updated_at
+                    deleted
                   }
               }`,
-    tags_master: `{
-                    tags_master{
-                      id
-                      task_id
-                      tag_id
-                      text
-                    }
-                  }`,
     tags: `{
-            tags{
+            tags(
+              where: {
+                updated_at: {_gt: "${doc.updated_at}"},
+              },
+              limit: ${batchSize},
+              order_by: [{updated_at: asc}, {id: asc}]
+            ){
               id
               text
+              updated_at
+              deleted
             }
           }`,
     subtasks: `{
-                subtasks{
+                subtasks(
+                  where: {
+                    updated_at: {_gt: "${doc.updated_at}"},
+                  },
+                  limit: ${batchSize},
+                  order_by: [{updated_at: asc}, {id: asc}]
+                ){
                     id
                     task_id
                     name
                     done
+                    updated_at
+                    deleted
                   }
                 }`,
   };
@@ -258,7 +288,6 @@ export const variable = (collection) => {
     priority: "priority",
     status: "status",
     task_tags: "task_tag",
-    tags_master: "tag_master",
     tags: "tag",
     subtasks: "subtask",
   };

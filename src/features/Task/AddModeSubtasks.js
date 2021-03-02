@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const AddModeSubtasks = ({ control }) => {
   const [clicked, setClicked] = useState(false);
   const [name, setName] = useState("");
+  const [error, setError] = useState(false);
 
   const classes = useStyles();
 
@@ -19,9 +20,7 @@ const AddModeSubtasks = ({ control }) => {
 
   const handleConfirm = () => {
     setClicked(false);
-    if (name) {
-      append({ name: name, done: false });
-    }
+    name ? append({ name: name, done: false }) : setError(true);
   };
 
   const newSubtask = (
@@ -30,7 +29,10 @@ const AddModeSubtasks = ({ control }) => {
         name="newSubtask"
         className={classes.margin}
         label="Subtask"
-        onChange={(e) => setName(e.target.value)}
+        onChange={(e) => {
+          if (error) setError(false);
+          setName(e.target.value);
+        }}
         onKeyPress={(e) => {
           if (e.key === "Enter") handleConfirm();
         }}

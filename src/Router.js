@@ -2,7 +2,6 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import AddTask from "./pages/AddTask";
 import EditTask from "./pages/EditTask";
 import TodoList from "./pages/TodoList";
-import { Provider } from "rxdb-hooks";
 
 const Router = () => {
   return (

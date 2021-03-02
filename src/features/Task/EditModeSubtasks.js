@@ -5,11 +5,14 @@ import { SubdirectoryArrowRight, Close, Check } from "@material-ui/icons";
 import { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
+import { useRxCollection } from "rxdb-hooks";
 
 const EditModeSubtasks = ({ subtasks }) => {
   const [clicked, setClicked] = useState(false);
   const [name, setName] = useState("");
   const [document, setDocument] = useState();
+  const [error, setError] = useState(false);
+  const subtasksCollection = useRxCollection("subtasks");
 
   const classes = useStyles();
   const { taskId } = useParams();
@@ -17,13 +20,12 @@ const EditModeSubtasks = ({ subtasks }) => {
   const handleAdd = () => {
     setClicked(true);
     setName("");
-    setDocument(
-      subtasks.newDocument({
-        task_id: taskId,
-        name: "",
-        done: false,
-      })
-    );
+    const tempDoc = subtasksCollection.newDocument({
+      task_id: taskId,
+      name: "",
+      done: false,
+    });
+    setDocument(tempDoc);
   };
 
   const handleConfirm = async () => {
@@ -31,11 +33,11 @@ const EditModeSubtasks = ({ subtasks }) => {
     if (name) {
       document.name = name;
       document.save();
-    }
+    } else setError(true);
   };
 
   const handleChange = (subtask) => async (event) => {
-    await subtasks.atomicUpdate((item) => (item.done = event.target.checked));
+    await subtask.atomicPatch({ done: event.target.checked });
   };
 
   return (
@@ -67,12 +69,17 @@ const EditModeSubtasks = ({ subtasks }) => {
       {clicked ? (
         <div>
           <TextField
+            error={error}
             className={classes.margin}
             label="Subtask"
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              if (error) setError(false);
+              setName(e.target.value);
+            }}
             onKeyPress={(e) => {
               if (e.key === "Enter") handleConfirm();
             }}
+            helperText="Name is a required field"
             defaultValue=""
           ></TextField>
           <IconButton edge="end" onClick={handleConfirm}>
@@ -98,7 +105,7 @@ const EditModeSubtasks = ({ subtasks }) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  marginTopBottom: {
+  margin: {
     marginLeft: theme.spacing(2),
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(3),

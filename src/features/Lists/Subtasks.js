@@ -1,16 +1,12 @@
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { List, Checkbox } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { useRxData } from "rxdb-hooks";
 
-const Subtasks = ({ todo }) => {
+const Subtasks = ({ subtasks }) => {
   const classes = useStyles();
-  const { result: subtasks } = useRxData("subtasks", (collection) =>
-    collection.find().where("task_id").equals(todo.id)
-  );
 
   const handleChange = (subtask) => async (event) => {
-    await subtask.atomicUpdate((item) => (item.done = event.target.checked));
+    await subtask.atomicPatch({ done: event.target.checked });
   };
 
   return (

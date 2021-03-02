@@ -8,14 +8,10 @@ import { useParams, useHistory } from "react-router-dom";
 const Item = ({ todo }) => {
   const { listId } = useParams();
   const history = useHistory();
-  const item = todo;
 
   const handleCheck = async (event) => {
-    const updateFunction = (item) => {
-      item.status = event.target.checked ? "2" : "1";
-    };
-
-    await item.atomicUpdate(updateFunction);
+    const newStatus = event.target.checked ? "3" : "2";
+    await todo.atomicPatch({ status_id: newStatus });
   };
 
   const labelId = `checkbox-list-label-${todo.name}`;
@@ -26,7 +22,7 @@ const Item = ({ todo }) => {
         <ListItemIcon>
           <Checkbox
             edge="start"
-            checked={todo.status === "2"}
+            checked={todo.status_id === "3"}
             color="primary"
             inputProps={{ "aria-labelledby": labelId }}
             onChange={handleCheck}

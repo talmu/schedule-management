@@ -1,6 +1,6 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider, Select, TextField } from "@material-ui/core";
+import { Divider, TextField } from "@material-ui/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import TimeTable from "./TimeTable";
@@ -10,18 +10,19 @@ import AddModeTags from "./AddModeTags";
 import EditModeTags from "./EditModeTags";
 import AddModeSubtasks from "./AddModeSubtasks";
 import EditModeSubtasks from "./EditModeSubtasks";
-import { useRxData } from "rxdb-hooks";
 import { useParams } from "react-router-dom";
 import Loading from "../../components/Loading";
-// import * as R from "ramda";
+import { useStatus, usePriorities, useTags } from "../../data/DBHooks";
 
 const Task = ({ task, subtasks }) => {
   const { taskId } = useParams();
   const classes = useStyles();
 
-  const { result: status, isFetching } = useRxData("status", (collection) =>
-    collection.find()
-  );
+  const [status, isStatusFetching] = useStatus();
+  const [priority, isPriorityFetching] = usePriorities();
+  const [tags, isTagsFetching] = useTags();
+
+  let isFetching = isStatusFetching || isPriorityFetching || isTagsFetching;
 
   // form validation rules
   const validationSchema = yup.object().shape({
@@ -29,16 +30,13 @@ const Task = ({ task, subtasks }) => {
   });
 
   const { control, register, handleSubmit, errors } = useForm({
-    defaultValues: {
-      subtasks: subtasks,
-    },
     resolver: yupResolver(validationSchema),
   });
 
   return isFetching ? (
     <Loading />
   ) : (
-    <div style={{ width: "88%" }} className={classes.marginLeft}>
+    <div style={{ width: "88%" }} className={classes.form}>
       <form className={classes.root}>
         <TextField
           key="name"
@@ -77,7 +75,11 @@ const Task = ({ task, subtasks }) => {
           <AddModeSubtasks control={control} />
         )}
         <Divider />
-        <Priority control={control} taskPriority={task.priority_id} />
+        <Priority
+          control={control}
+          taskPriority={task.priority_id}
+          priority={priority}
+        />
         <Divider />
         <TextField
           key="task-notes"
@@ -91,11 +93,20 @@ const Task = ({ task, subtasks }) => {
           inputRef={register}
         />
         <Divider />
-        {taskId ? <EditModeTags /> : <AddModeTags control={control} />}
+        {taskId ? (
+          <EditModeTags tags={tags} />
+        ) : (
+          <AddModeTags control={control} tags={tags} />
+        )}
         <Divider />
         <TimeTable register={register} task={task} />
       </form>
-      <FooterBar handleSubmit={handleSubmit} task={task} />
+      <FooterBar
+        handleSubmit={handleSubmit}
+        document={task}
+        subtasks={subtasks}
+        errors={errors}
+      />
     </div>
   );
 };
@@ -109,8 +120,10 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(2),
   },
-  marginLeft: {
+  form: {
+    marginTop: theme.spacing(1),
     marginLeft: theme.spacing(2),
+    marginBottom: theme.spacing(8),
   },
   appBar: {
     top: "auto",

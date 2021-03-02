@@ -1,13 +1,8 @@
 import { Controller } from "react-hook-form";
 import { RadioGroup, FormControl, FormControlLabel } from "@material-ui/core";
 import { Radio, FormLabel, Grid } from "@material-ui/core";
-import { useRxData } from "rxdb-hooks";
 
-const Priority = ({ control, taskPriority }) => {
-  const { result: priority } = useRxData("priority", (collection) =>
-    collection.find()
-  );
-
+const Priority = ({ control, taskPriority, priority }) => {
   return (
     <FormControl component="fieldset">
       <Grid container spacing={1}>

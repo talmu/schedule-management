@@ -1,32 +1,27 @@
 import { Chip, Collapse, Grid } from "@material-ui/core";
 import Subtasks from "./Subtasks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { ExpandLess, ExpandMore } from "@material-ui/icons";
-import { useRxData, useRxDocument } from "rxdb-hooks";
+import { useSubtasks, useTaskTags } from "../../data/DBHooks";
 import Loading from "../../components/Loading";
-import * as R from "ramda";
 
 const ItemTags = ({ todo }) => {
   const [open, setOpen] = useState(false);
   const classes = useStyles();
+  const [tags, setTags] = useState([]);
 
-  const { result: subtasks, isFetching: isSubtasks } = useRxData(
-    "subtasks",
-    (collection) => collection.find().where("task_id").equals(todo.id)
-  );
+  const [subtasks, isSubtasksFetching] = useSubtasks(todo.id);
+  const [task_tags, isTagsFetching] = useTaskTags(todo.id);
+  const isFetching = isSubtasksFetching || isTagsFetching;
 
-  const { result: task_tags, isFetching: isTags } = useRxData(
-    "task_tags",
-    (collection) => collection.find().where("task_id").equals(todo.id)
-  );
-
-  const tags = Promise.all(
-    task_tags.map(async (task_tag) => await task_tag.tag_id_)
-  );
+  useEffect(() => {
+    Promise.all(task_tags.map(async (task_tag) => await task_tag.tag_id_)).then(
+      setTags
+    );
+  }, [task_tags]);
 
   const subtasksLen = subtasks.length;
-  const isFetching = isSubtasks || isTags;
 
   return isFetching ? (
     <Loading />
@@ -45,15 +40,15 @@ const ItemTags = ({ todo }) => {
             />
           </Grid>
         ) : null}
-        {/* {tags.map((tag, index) => (
+        {tags.map((tag, index) => (
           <Grid item key={index}>
             <Chip size="small" label={tag.text} color="secondary" />
           </Grid>
-        ))} */}
+        ))}
       </Grid>
       {subtasksLen !== 0 ? (
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <Subtasks todo={todo} />
+          <Subtasks todo={todo} subtasks={subtasks} />
         </Collapse>
       ) : null}
     </div>
@@ -62,7 +57,6 @@ const ItemTags = ({ todo }) => {
 
 const useStyles = makeStyles((theme) => ({
   grid: {
-    // padding: theme.spacing(1.5),
     marginLeft: theme.spacing(6),
     marginBottom: theme.spacing(1),
   },

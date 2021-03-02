@@ -7,30 +7,30 @@ import { useParams } from "react-router-dom";
 const AddTask = () => {
   const { listId } = useParams();
   const todos = useRxCollection("todos");
-  console.log(todos);
 
-  let tempTask;
+  let tempDoc = {};
+  const subtasks = [];
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const formattedDateTime = formatISO(tomorrow).slice(0, -9);
 
-  todos
-    ? (tempTask = todos.newDocument({
-        name: "",
-        status_id: "1",
-        priority_id: "4",
-        list_id: listId,
-        notes: "",
-        reminder: "00:00",
-        duration: "02:00",
-        scheduled: formatISO(today, { representation: "date" }),
-        due: formattedDateTime,
-      }))
-    : (tempTask = {});
+  if (todos) {
+    tempDoc = todos.newDocument({
+      name: "",
+      status_id: "1",
+      priority_id: "4",
+      list_id: listId,
+      notes: "",
+      reminder: "00:00",
+      duration: "02:00",
+      scheduled: formatISO(today, { representation: "date" }),
+      due: formatISO(tomorrow),
+    });
+    console.log(tempDoc.due);
+  }
 
   return todos ? (
-    <Task key="new-item" task={tempTask} subtasks={[]} />
+    <Task key="new-item" task={tempDoc} subtasks={subtasks} />
   ) : (
     <Loading />
   );

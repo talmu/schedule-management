@@ -2,26 +2,26 @@ import { ListItemText, List, ListItem, ListItemIcon } from "@material-ui/core";
 import { Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams, useHistory } from "react-router-dom";
-import { useRxData } from "rxdb-hooks";
 import { ImportContacts } from "@material-ui/icons";
 import { Functions, SortByAlpha, Dvr } from "@material-ui/icons";
 import Loading from "../components/Loading";
+import { useLists } from "../data/DBHooks";
 
 const MenuBar = ({ close }) => {
   const classes = useStyles();
   const { listId } = useParams();
   const history = useHistory();
 
-  const { result: lists } = useRxData("lists", (collection) =>
-    collection.find()
-  );
+  const [lists, isFetching] = useLists();
 
   const handleClick = (list_id) => () => {
     history.push(`/${list_id}`);
     close();
   };
 
-  return lists ? (
+  return isFetching ? (
+    <Loading />
+  ) : (
     <div>
       <div className={classes.toolbar} />
       <Divider />
@@ -44,8 +44,6 @@ const MenuBar = ({ close }) => {
         ))}
       </List>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

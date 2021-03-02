@@ -5,7 +5,6 @@ import {
   statusSchema,
   listSchema,
   taskTagsSchema,
-  tagsMasterSchema,
   tagsSchema,
   subtaskSchema,
 } from "./Schema";
@@ -14,8 +13,8 @@ import { RxDBValidatePlugin } from "rxdb/plugins/validate";
 import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import { subscriptionQuery, pushQuery, pullQuery, variable } from "./Queries";
-import { formatISO } from "date-fns";
 import { v4 as uuidv4 } from "uuid";
+import { createBrowserHistory } from "history";
 
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBValidatePlugin);
@@ -24,18 +23,14 @@ addRxPlugin(require("pouchdb-adapter-idb"));
 
 const syncURL = "http://localhost:8080/v1/graphql";
 
-const batchSize = 5;
+const batchSize = 10;
 
 const pullQueryBuilder = (collection) => (doc) => {
   if (!doc) {
-    collection === "todos"
-      ? (doc = {
-          id: "",
-          updated_at: new Date(0).toUTCString(),
-        })
-      : (doc = {
-          id: "",
-        });
+    doc = {
+      id: "",
+      updated_at: new Date(0).toUTCString(),
+    };
   }
   const query = pullQuery(collection, batchSize, doc);
 
@@ -48,7 +43,7 @@ const pullQueryBuilder = (collection) => (doc) => {
 const pushQueryBuilder = (collection) => (doc) => {
   const query = pushQuery(collection);
   const variables = {
-    [variable]: doc,
+    [variable(collection)]: doc,
   };
   return {
     query,
@@ -138,7 +133,6 @@ export const RemoteDbReplication = (db) => {
     "tags",
     "todos",
     "task_tags",
-    "tags_master",
     "subtasks",
   ];
 
@@ -151,7 +145,6 @@ export const RemoteDbReplication = (db) => {
 
 export const initializeDB = async () => {
   await removeRxDatabase("todos_rxdb", "idb");
-
   const db = await createRxDatabase({
     name: "todos_rxdb",
     adapter: "idb",
@@ -177,9 +170,6 @@ export const initializeDB = async () => {
     task_tags: {
       schema: taskTagsSchema,
     },
-    tags_master: {
-      schema: tagsMasterSchema,
-    },
     tags: {
       schema: tagsSchema,
     },
@@ -188,14 +178,8 @@ export const initializeDB = async () => {
     },
   });
 
-  db.todos.preSave(function (plainData, rxDocument) {
-    plainData.updated_at = formatISO(new Date());
-  }, true);
-
   db.todos.preInsert(function (plainData) {
-    const today = new Date();
     plainData.id = uuidv4();
-    plainData.created_at = formatISO(today);
   }, true);
 
   db.subtasks.preInsert(function (plainData) {
@@ -208,3 +192,5 @@ export const initializeDB = async () => {
 
   return db;
 };
+
+export const history = createBrowserHistory();
