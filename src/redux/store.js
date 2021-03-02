@@ -1,7 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import { tasksData } from "../data/data";
 // import { connectRouter, routerMiddleware } from "connected-react-router";
-import { createBrowserHistory } from "history";
 
 const addTask = (state, { payload }) => {
   state.todos[payload.listId].data.push(payload.task);
@@ -63,7 +62,7 @@ const todoSlice = createSlice({
   },
 });
 
-export const history = createBrowserHistory();
+// export const history = createBrowserHistory();
 
 // const rootReducer = (history) =>
 //   combineReducers({

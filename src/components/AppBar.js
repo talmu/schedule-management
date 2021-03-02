@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
 import { Menu } from "@material-ui/icons";
 import { AppBar } from "@material-ui/core";
-import { lists } from "../data/data";
+import { useRxDocument } from "rxdb-hooks";
 
 const Bar = ({ openMenu }) => {
   const classes = useStyles();
@@ -37,8 +37,10 @@ const Bar = ({ openMenu }) => {
 
 const ListTitle = () => {
   const { listId } = useParams();
-  const listName = lists[listId];
-  return `${listName} List`;
+
+  const { result: list } = useRxDocument("lists", listId);
+
+  return list ? list.name : "Loading";
 };
 
 const drawerWidth = 240;

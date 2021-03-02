@@ -1,28 +1,28 @@
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Divider, MenuItem } from "@material-ui/core";
-import { TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+import { Divider, TextField } from "@material-ui/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useSelector } from "react-redux";
 import TimeTable from "./TimeTable";
 import Priority from "./Priority";
 import FooterBar from "./FooterBar";
-import Tags from "./Tags";
-import { status } from "../../data/data";
-// import { useParams } from "react-router-dom";
-import EditableSubtasks from "./EditableSubtasks";
+import AddModeTags from "./AddModeTags";
+import EditModeTags from "./EditModeTags";
+import AddModeSubtasks from "./AddModeSubtasks";
+import EditModeSubtasks from "./EditModeSubtasks";
+import { useParams } from "react-router-dom";
+import Loading from "../../components/Loading";
+import { useStatus, usePriorities, useTags } from "../../data/DBHooks";
 
-const Task = ({ task }) => {
+const Task = ({ task, subtasks }) => {
+  const { taskId } = useParams();
   const classes = useStyles();
 
-  const tags = useSelector((state) => state.tags);
-  const todos = useSelector((state) => state.todos);
+  const [status, isStatusFetching] = useStatus();
+  const [priority, isPriorityFetching] = usePriorities();
+  const [tags, isTagsFetching] = useTags();
 
-  // const selectedIndex = useSelector((state) => state.selectedIndex);
-  // const selected = useSelector((state) => state.selectedTask);
-  // const mode = selected !== -1 ? "Edit" : "Add";
+  let isFetching = isStatusFetching || isPriorityFetching || isTagsFetching;
 
   // form validation rules
   const validationSchema = yup.object().shape({
@@ -30,17 +30,16 @@ const Task = ({ task }) => {
   });
 
   const { control, register, handleSubmit, errors } = useForm({
-    defaultValues: {
-      subtasks: task.subtasks,
-    },
     resolver: yupResolver(validationSchema),
   });
 
-  return (
-    <div style={{ width: "88%" }} className={classes.marginLeft}>
+  return isFetching ? (
+    <Loading />
+  ) : (
+    <div style={{ width: "88%" }} className={classes.form}>
       <form className={classes.root}>
         <TextField
-          id="name"
+          key="name"
           name="name"
           label="Name"
           variant="outlined"
@@ -51,26 +50,39 @@ const Task = ({ task }) => {
         />
         <p>{errors.name?.message}</p>
         <TextField
-          id="select"
-          name="status"
+          key="select"
+          name="status_id"
           label="Status"
           variant="outlined"
           fullWidth
-          defaultValue={task.status}
           select
+          defaultValue={task.status_id}
+          SelectProps={{
+            native: true,
+          }}
           inputRef={register({ required: true })}
         >
           {status.map((s) => (
-            <MenuItem value={s}>{s}</MenuItem>
+            <option key={s.id} value={s.id}>
+              {s.text}
+            </option>
           ))}
         </TextField>
         <Divider />
-        <EditableSubtasks control={control} register={register} />
+        {taskId ? (
+          <EditModeSubtasks subtasks={subtasks} />
+        ) : (
+          <AddModeSubtasks control={control} />
+        )}
         <Divider />
-        <Priority control={control} taskPriority={task.priority} />
+        <Priority
+          control={control}
+          taskPriority={task.priority_id}
+          priority={priority}
+        />
         <Divider />
         <TextField
-          id="task-notes"
+          key="task-notes"
           name="notes"
           label="Notes"
           variant="outlined"
@@ -81,15 +93,19 @@ const Task = ({ task }) => {
           inputRef={register}
         />
         <Divider />
-        <Tags control={control} tags={tags} defaultTags={task.tags} />
+        {taskId ? (
+          <EditModeTags tags={tags} />
+        ) : (
+          <AddModeTags control={control} tags={tags} />
+        )}
         <Divider />
         <TimeTable register={register} task={task} />
       </form>
       <FooterBar
         handleSubmit={handleSubmit}
-        task={task}
-        tags={tags}
-        todos={todos}
+        document={task}
+        subtasks={subtasks}
+        errors={errors}
       />
     </div>
   );
@@ -104,8 +120,10 @@ const useStyles = makeStyles((theme) => ({
   marginTop: {
     marginTop: theme.spacing(2),
   },
-  marginLeft: {
+  form: {
+    marginTop: theme.spacing(1),
     marginLeft: theme.spacing(2),
+    marginBottom: theme.spacing(8),
   },
   appBar: {
     top: "auto",

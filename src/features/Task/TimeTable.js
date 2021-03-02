@@ -1,6 +1,8 @@
 import { TextField, Grid } from "@material-ui/core";
 
 const TimeTable = ({ task, register }) => {
+  const due = task.due.slice(0, 16);
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={8}>
@@ -34,7 +36,7 @@ const TimeTable = ({ task, register }) => {
           name="due"
           label="Due"
           type="datetime-local"
-          defaultValue={task.due}
+          defaultValue={due}
           InputLabelProps={{ shrink: true }}
           inputRef={register({ required: true })}
         ></TextField>

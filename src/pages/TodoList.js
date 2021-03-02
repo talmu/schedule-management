@@ -3,10 +3,10 @@ import AddFab from "./../features/Task/AddFab";
 
 const TodoList = () => {
   return (
-    <div>
+    <>
       <TaskList />
       <AddFab />
-    </div>
+    </>
   );
 };
 

@@ -2,8 +2,9 @@ import { TextField, Grid, InputLabel } from "@material-ui/core";
 import { Controller } from "react-hook-form";
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
+import * as R from "ramda";
 
-const Tags = ({ control, tags, defaultTags }) => {
+const AddModeTags = ({ control, tags }) => {
   const filter = createFilterOptions();
   const classes = useStyles();
 
@@ -16,32 +17,46 @@ const Tags = ({ control, tags, defaultTags }) => {
         <Controller
           name="tags"
           control={control}
-          defaultValue={defaultTags}
+          defaultValue={[]}
           render={({ onChange, value }) => (
             <Autocomplete
               multiple
               id="tagsCombobox"
-              onChange={(e, value) => onChange(value)}
+              onChange={(e, newArray, reason) => {
+                if (reason === "select-option") {
+                  const newValue = newArray[newArray.length - 1].inputValue;
+                  if (newValue)
+                    newArray[newArray.length - 1] = { text: newValue };
+                }
+                onChange(newArray);
+              }}
               selectOnFocus
               handleHomeEndKeys
               clearOnBlur
               value={value}
               options={tags}
-              renderOption={(option) => option.title}
-              getOptionLabel={(option) =>
-                option.inputValue ? option.inputValue : option.title
-              }
+              renderOption={(option) => option.text}
+              getOptionLabel={(option) => {
+                if (typeof option === "string") return option;
+                if (option.inputValue) return option.inputValue;
+                return option.text;
+              }}
               filterOptions={(options, params) => {
                 const filtered = filter(options, params);
 
                 // Suggest the creation of a new value
-                if (params.inputValue !== "") {
-                  filtered.push({
-                    inputValue: params.inputValue,
-                    title: `Create "${params.inputValue}"`,
-                  });
+                if (params.inputValue !== "" && filtered.length === 0) {
+                  const isExist = R.contains(
+                    { text: params.inputValue },
+                    value
+                  );
+                  if (!isExist) {
+                    filtered.push({
+                      inputValue: params.inputValue,
+                      text: `Create "${params.inputValue}"`,
+                    });
+                  }
                 }
-
                 return filtered;
               }}
               filterSelectedOptions
@@ -69,4 +84,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default Tags;
+export default AddModeTags;

@@ -6,7 +6,7 @@ import TodoList from "./pages/TodoList";
 const Router = () => {
   return (
     <Switch>
-      <Route path="/add-task">
+      <Route path="/add-task/:listId">
         <AddTask />
       </Route>
       <Route exact path="/edit-task/:listId/:taskId">
@@ -15,7 +15,7 @@ const Router = () => {
       <Route exact path="/:listId">
         <TodoList />
       </Route>
-      <Redirect from="/" to="/0" />
+      <Redirect from="/" to="/1" />
     </Switch>
   );
 };

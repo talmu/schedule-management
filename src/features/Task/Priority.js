@@ -1,9 +1,8 @@
 import { Controller } from "react-hook-form";
 import { RadioGroup, FormControl, FormControlLabel } from "@material-ui/core";
 import { Radio, FormLabel, Grid } from "@material-ui/core";
-import { priority } from "../../data/data";
 
-const Priority = ({ control, taskPriority }) => {
+const Priority = ({ control, taskPriority, priority }) => {
   return (
     <FormControl component="fieldset">
       <Grid container spacing={1}>
@@ -11,7 +10,7 @@ const Priority = ({ control, taskPriority }) => {
           <FormLabel component="legend">Priority</FormLabel>
         </Grid>
         <Controller
-          name="priority"
+          name="priority_id"
           control={control}
           rules={{ required: true }}
           defaultValue={taskPriority}
@@ -21,15 +20,14 @@ const Priority = ({ control, taskPriority }) => {
               value={value}
               onChange={(e) => onChange(e.target.value)}
             >
-              {priority.map((p, index) => {
-                const key = `${index}-${p}`;
+              {priority.map((p) => {
                 return (
-                  <Grid item xs={3} key={key}>
+                  <Grid item xs={3} key={p.id}>
                     <FormControlLabel
-                      name={p}
-                      value={p}
+                      name={p.id}
+                      value={p.id}
                       control={<Radio color="secondary" />}
-                      label={p}
+                      label={p.text}
                       labelPlacement="bottom"
                     />
                   </Grid>
@@ -44,39 +42,3 @@ const Priority = ({ control, taskPriority }) => {
 };
 
 export default Priority;
-
-// <Controller
-// name="priority"
-// control={control}
-// rules={{ required: true }}
-// defaultValue={taskPriority}
-// render={({ onChange, value }) => (
-//   <FormControl component="fieldset">
-//     <Grid container spacing={1}>
-//       <Grid item xs={12}>
-//         <FormLabel component="legend">Priority</FormLabel>
-//       </Grid>
-//       <RadioGroup
-//         row
-//         value={value}
-//         onChange={(e) => onChange(e.target.value)}
-//       >
-//         {priority.map((p, index) => {
-//           const key = `${index}-${p}`;
-//           return (
-//             <Grid item xs={3} key={key}>
-//               <FormControlLabel
-//                 name={p}
-//                 value={p}
-//                 control={<Radio color="secondary" />}
-//                 label={p}
-//                 labelPlacement="bottom"
-//               />
-//             </Grid>
-//           );
-//         })}
-//       </RadioGroup>
-//     </Grid>
-//   </FormControl>
-// )}
-// />

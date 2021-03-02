@@ -1,23 +1,40 @@
 import "./App.css";
+import React, { useState, useEffect } from "react";
+import { initializeDB, RemoteDbReplication } from "./data/Database";
 import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import { store, history } from "./redux/store";
+import { Provider as RxDBProvider } from "rxdb-hooks";
+import { history } from "./data/Database";
 import Template from "./components/Template";
 import Router from "./Router";
-// import { ConnectedRouter } from "connected-react-router";
+import Loading from "./components/Loading";
 
-function App() {
+const App = () => {
+  const [db, setDb] = useState(null);
+
+  useEffect(() => {
+    const initDB = async () => {
+      const _db = await initializeDB();
+      const cancellations = RemoteDbReplication(_db);
+      setDb(_db);
+
+      return cancellations;
+    };
+    initDB();
+  }, []);
+
   return (
     <BrowserRouter>
-      <Provider store={store}>
-        {/* <ConnectedRouter history={history}> */}
-        <Template>
-          <Router history={history} />
-        </Template>
-        {/* </ConnectedRouter> */}
-      </Provider>
+      {!db ? (
+        <Loading />
+      ) : (
+        <RxDBProvider db={db}>
+          <Template>
+            <Router history={history} />
+          </Template>
+        </RxDBProvider>
+      )}
     </BrowserRouter>
   );
-}
+};
 
 export default App;

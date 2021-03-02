@@ -1,11 +1,14 @@
-import { useParams } from "react-router-dom";
 import Task from "./../features/Task/Task";
-import { useSelector } from "react-redux";
+import Loading from "../components/Loading";
+import { useTask, useSubtasks } from "../data/DBHooks";
 
 const EditTask = () => {
-  const { listId, taskId } = useParams();
-  const task = useSelector((state) => state.todos[listId].data[taskId]);
-  return <Task key={`${listId}-${task}`} task={task} />;
+  const [task, isTaskFetching] = useTask();
+  const [subtasks, isSubtaskFetching] = useSubtasks();
+
+  const isFetching = isTaskFetching || isSubtaskFetching;
+
+  return isFetching ? <Loading /> : <Task task={task} subtasks={subtasks} />;
 };
 
 export default EditTask;
