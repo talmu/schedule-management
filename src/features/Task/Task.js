@@ -22,7 +22,7 @@ const Task = ({ task, subtasks }) => {
   const [priority, isPriorityFetching] = usePriorities();
   const [tags, isTagsFetching] = useTags();
 
-  let isFetching = isStatusFetching || isPriorityFetching || isTagsFetching;
+  const isFetching = isStatusFetching || isPriorityFetching || isTagsFetching;
 
   // form validation rules
   const validationSchema = yup.object().shape({

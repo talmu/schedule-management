@@ -4,13 +4,17 @@ import { IconButton } from "@material-ui/core";
 import { Edit } from "@material-ui/icons";
 import ItemTags from "./ItemTags";
 import { useParams, useHistory } from "react-router-dom";
+import * as R from "ramda";
 
-const Item = ({ todo }) => {
+const Item = ({ todo, status }) => {
   const { listId } = useParams();
   const history = useHistory();
 
+  const statusDone = R.find(R.propEq("text", "Done"))(status);
+  const statusProgress = R.find(R.propEq("text", "In progress"))(status);
+
   const handleCheck = async (event) => {
-    const newStatus = event.target.checked ? "3" : "2";
+    const newStatus = event.target.checked ? statusDone.id : statusProgress.id;
     await todo.atomicPatch({ status_id: newStatus });
   };
 
@@ -22,7 +26,7 @@ const Item = ({ todo }) => {
         <ListItemIcon>
           <Checkbox
             edge="start"
-            checked={todo.status_id === "3"}
+            checked={todo.status_id === statusDone.id}
             color="primary"
             inputProps={{ "aria-labelledby": labelId }}
             onChange={handleCheck}

@@ -23,8 +23,8 @@ const Bar = ({ openMenu }) => {
         </IconButton>
         <Typography variant="h6" noWrap>
           <Switch>
-            <Route path="/add-task">Add Task</Route>
-            <Route path="/edit-task/:taskId">Edit Task</Route>
+            <Route path="/add-task/:listId">Add Task</Route>
+            <Route path="/edit-task/:listId/:taskId">Edit Task</Route>
             <Route path="/:listId">
               <ListTitle />
             </Route>

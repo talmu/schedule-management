@@ -25,16 +25,12 @@ const FooterBar = ({ handleSubmit, document, subtasks }) => {
   const handleDelete = async () => {
     console.log(subtasks, task_tags);
 
-    subtasks.map(async (subtask) => await subtask.remove());
-    task_tags.map(async (task_tag) => await task_tag.remove());
+    const promises = R.concat(
+      subtasks.map((subtask) => subtask.remove()),
+      task_tags.map((task_tag) => task_tag.remove())
+    );
 
-    // const subtasksToRemove = subtasks.map((subtask) => subtask.id);
-    // const taskTagsToRemove = task_tags.map((task_tag) => task_tag.id);
-
-    // if (subtasksToRemove.length > 0)
-    //   await subtasksCollection.bulkRemove(subtasksToRemove);
-    // if (taskTagsToRemove.length > 0)
-    //   await taskTagsCollection.bulkRemove(taskTagsToRemove);
+    await Promise.all(promises);
     await document.remove();
 
     redirectToList();
@@ -62,38 +58,30 @@ const FooterBar = ({ handleSubmit, document, subtasks }) => {
   };
 
   const AddDocument = async (data) => {
-    document.name = data.name;
-    document.status_id = data.status_id;
-    document.priority_id = data.priority_id;
-    document.notes = data.notes;
-    document.reminder = data.reminder;
-    document.due = data.due;
-    document.duration = data.duration;
-    document.scheduled = data.scheduled;
+    R.forEachObjIndexed(
+      (value, key) => document.set(key, value),
+      R.omit(["subtasks", "tags"], data)
+    );
+
     document.list_id = listId;
 
     await document.save();
+    const [existTags, newTags] = R.partition(R.has("id"), data.tags);
 
-    const existTags = data.tags.filter((tag) => tag.id !== undefined);
-    const newTags = R.difference(data.tags, existTags);
-    const uuidArr = Array.from({ length: newTags.length }, () => uuidv4());
+    const tagsToCreate = newTags.map((tag) => {
+      return { id: uuidv4(), text: tag.text };
+    });
 
-    console.log(existTags, newTags, uuidArr);
+    const newTaskTagsToAdd = tagsToCreate.map((tag) => {
+      return { task_id: document.id, tag_id: tag.id };
+    });
 
     const existTaskTagsToAdd = existTags.map((tag) => {
       return { task_id: document.id, tag_id: tag.id };
     });
 
-    const newTaskTagsToAdd = newTags.map((tag, index) => {
-      return { task_id: document.id, tag_id: uuidArr[index] };
-    });
-
-    const tagsToAdd = newTags.map((tag, index) => {
-      return { id: uuidArr[index], text: tag.text };
-    });
-
     const finalTaskTags = R.concat(existTaskTagsToAdd, newTaskTagsToAdd);
-    await tagsCollection.bulkInsert(tagsToAdd);
+    await tagsCollection.bulkInsert(tagsToCreate);
     await taskTagsCollection.bulkInsert(finalTaskTags);
 
     if (data.subtasks) {
