@@ -15,7 +15,7 @@ const Router = () => {
       <Route exact path="/:listId">
         <TodoList />
       </Route>
-      <Redirect from="/" to="/1" />
+      <Redirect from="/" to="/e52b584b-186d-446e-ae08-7aa01c277557" />
     </Switch>
   );
 };

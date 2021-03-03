@@ -78,7 +78,7 @@ export const pushQuery = (collection) => {
               insert_lists(
                 objects: $list,
                 on_conflict: {
-                    constraint: todo_lists_pkey,
+                    constraint: lists_pkey,
                     update_columns: [name, updated_at, deleted]
               }){
                 returning {

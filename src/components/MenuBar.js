@@ -6,6 +6,8 @@ import { ImportContacts } from "@material-ui/icons";
 import { Functions, SortByAlpha, Dvr } from "@material-ui/icons";
 import Loading from "../components/Loading";
 import { useLists } from "../data/DBHooks";
+import AddNewList from "./AddNewList";
+import * as R from "ramda";
 
 const MenuBar = ({ close }) => {
   const classes = useStyles();
@@ -23,10 +25,12 @@ const MenuBar = ({ close }) => {
     <Loading />
   ) : (
     <div>
-      <div className={classes.toolbar} />
+      <div className={classes.toolbar}>
+        <AddNewList />
+      </div>
       <Divider />
       <List>
-        {lists.map((list) => (
+        {lists.map((list, index) => (
           <ListItem
             button
             key={list.id}
@@ -34,21 +38,29 @@ const MenuBar = ({ close }) => {
             onClick={handleClick(list.id)}
           >
             <ListItemIcon>
-              {list.id === "1" ? <Functions /> : ""}
-              {list.id === "2" ? <ImportContacts /> : ""}
-              {list.id === "3" ? <SortByAlpha /> : ""}
-              {list.id === "4" ? <Dvr /> : ""}
+              {R.equals(list.name, "Math") ? <Functions /> : ""}
+              {R.equals(list.name, "Hebrew") ? <ImportContacts /> : ""}
+              {R.equals(list.name, "English") ? <SortByAlpha /> : ""}
+              {R.equals(list.name, "Computer") ? <Dvr /> : ""}
             </ListItemIcon>
             <ListItemText primary={list.name} />
           </ListItem>
         ))}
       </List>
+      <Divider />
     </div>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
+  iconButton: {
+    padding: 10,
+  },
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
+  },
 }));
 
 export default MenuBar;
