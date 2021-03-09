@@ -1,1 +1,92 @@
-[]
+- table:
+    schema: public
+    name: lists
+  array_relationships:
+  - name: todos
+    using:
+      foreign_key_constraint_on:
+        column: list_id
+        table:
+          schema: public
+          name: todos
+- table:
+    schema: public
+    name: priority
+  array_relationships:
+  - name: todos
+    using:
+      foreign_key_constraint_on:
+        column: priority_id
+        table:
+          schema: public
+          name: todos
+- table:
+    schema: public
+    name: status
+  array_relationships:
+  - name: todos
+    using:
+      foreign_key_constraint_on:
+        column: status_id
+        table:
+          schema: public
+          name: todos
+- table:
+    schema: public
+    name: subtasks
+  object_relationships:
+  - name: todo
+    using:
+      foreign_key_constraint_on: task_id
+- table:
+    schema: public
+    name: tags
+  array_relationships:
+  - name: task_tags
+    using:
+      foreign_key_constraint_on:
+        column: tag_id
+        table:
+          schema: public
+          name: task_tags
+- table:
+    schema: public
+    name: task_tags
+  object_relationships:
+  - name: tag
+    using:
+      foreign_key_constraint_on: tag_id
+  - name: todo
+    using:
+      foreign_key_constraint_on: task_id
+- table:
+    schema: public
+    name: todos
+  object_relationships:
+  - name: list
+    using:
+      foreign_key_constraint_on: list_id
+  - name: priority
+    using:
+      foreign_key_constraint_on: priority_id
+  - name: status
+    using:
+      foreign_key_constraint_on: status_id
+  array_relationships:
+  - name: subtasks
+    using:
+      foreign_key_constraint_on:
+        column: task_id
+        table:
+          schema: public
+          name: subtasks
+  - name: task_tags
+    using:
+      foreign_key_constraint_on:
+        column: task_id
+        table:
+          schema: public
+          name: task_tags
+- table:
+    schema: public
+    name: users

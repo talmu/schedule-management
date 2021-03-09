@@ -1,6 +1,12 @@
-actions: []
+actions:
+- name: auth0
+  definition:
+    kind: ""
+    handler: http://host.docker.internal:3000
+    forward_client_headers: true
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+  - name: auth0_profile
   scalars: []
