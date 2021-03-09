@@ -192,5 +192,3 @@ export const initializeDB = async () => {
 
   return db;
 };
-
-export const history = createBrowserHistory();

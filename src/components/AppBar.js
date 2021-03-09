@@ -12,18 +12,19 @@ import Loading from "./Loading";
 const Bar = ({ openMenu }) => {
   const classes = useStyles();
   const db = useRxDB();
-  const { listId } = useParams();
+  const params = useParams();
 
-  console.log(listId);
+  console.log(params);
+  // console.log(listId);
 
   const [open, setOpen] = useState(false);
 
   const handleDeleteClick = () => setOpen(!open);
 
   const deleteList = async () => {
-    const query = db.todos.find().where("list_id").equals(listId);
-    const todos = await query.exec();
-    todos.map((todo) => deleteTodo(todo));
+    // const query = db.todos.find().where("list_id").equals(listId);
+    // const todos = await query.exec();
+    // todos.map((todo) => deleteTodo(todo));
   };
 
   const deleteTodo = async (todo) => {
@@ -79,7 +80,6 @@ const Bar = ({ openMenu }) => {
           </Switch>
         </Typography>
         <IconButton
-          disabled={!listId}
           color="inherit"
           aria-label="delete list"
           onClick={handleDeleteClick}
@@ -91,7 +91,7 @@ const Bar = ({ openMenu }) => {
           handleDeleteClick={handleDeleteClick}
           deleteFunc={deleteList}
         />
-        <IconButton color="inherit" aria-label="edit list" disabled={!listId}>
+        <IconButton color="inherit" aria-label="edit list">
           <Edit />
         </IconButton>
       </Toolbar>

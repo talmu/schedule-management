@@ -15,10 +15,8 @@ const Main = () => {
       <List key="todos" className={classes.list}>
         {lists.map((list) => {
           return (
-            <div>
-              <ListSubheader
-                key={list.name}
-              >{`${list.name} List`}</ListSubheader>
+            <div key={list.id}>
+              <ListSubheader>{`${list.name} List`}</ListSubheader>
               <TaskList list_id={list.id} />
             </div>
           );
