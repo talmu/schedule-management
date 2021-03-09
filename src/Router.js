@@ -1,12 +1,13 @@
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import AddTask from "./pages/AddTask";
 import EditTask from "./pages/EditTask";
 import TodoList from "./pages/TodoList";
+import Main from "./pages/Main";
 
 const Router = () => {
   return (
     <Switch>
-      <Route path="/add-task/:listId">
+      <Route exact path="/add-task/:listId">
         <AddTask />
       </Route>
       <Route exact path="/edit-task/:listId/:taskId">
@@ -15,7 +16,9 @@ const Router = () => {
       <Route exact path="/:listId">
         <TodoList />
       </Route>
-      <Redirect from="/" to="/e52b584b-186d-446e-ae08-7aa01c277557" />
+      <Route exact path="/">
+        <Main />
+      </Route>
     </Switch>
   );
 };

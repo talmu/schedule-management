@@ -146,7 +146,7 @@ export const RemoteDbReplication = (db) => {
 export const initializeDB = async () => {
   await removeRxDatabase("todos_rxdb", "idb");
   const db = await createRxDatabase({
-    name: "todos_rxdb",
+    name: "todos_db" + new Date().getTime(),
     adapter: "idb",
   });
 

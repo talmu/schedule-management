@@ -25,8 +25,6 @@ const EditModeTags = ({ tags }) => {
   }, [task_tags]);
 
   const handleChange = async (newArray, reason) => {
-    console.log(newArray);
-    console.log(reason);
     if (reason === "select-option") {
       const newValue = newArray[newArray.length - 1];
       console.log(newValue);

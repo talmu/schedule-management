@@ -30,7 +30,7 @@ const MenuBar = ({ close }) => {
       </div>
       <Divider />
       <List>
-        {lists.map((list, index) => (
+        {lists.map((list) => (
           <ListItem
             button
             key={list.id}
