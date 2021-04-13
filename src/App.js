@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { initializeDB, RemoteDbReplication } from "./data/Database";
 import { BrowserRouter } from "react-router-dom";
 import { Provider as RxDBProvider } from "rxdb-hooks";
-import { history } from "./data/Database";
 import Template from "./components/Template";
 import Router from "./Router";
 import Loading from "./components/Loading";
@@ -29,7 +28,7 @@ const App = () => {
       ) : (
         <RxDBProvider db={db}>
           <Template>
-            <Router history={history} />
+            <Router />
           </Template>
         </RxDBProvider>
       )}

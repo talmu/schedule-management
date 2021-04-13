@@ -1,13 +1,28 @@
-import { Typography, Toolbar, IconButton } from "@material-ui/core";
-import { Switch, Route } from "react-router-dom";
+import { Toolbar, IconButton } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useParams } from "react-router-dom";
-import { Menu } from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
+import MenuIcon from "@material-ui/icons/Menu";
 import { AppBar } from "@material-ui/core";
-import { useRxDocument } from "rxdb-hooks";
+import ListTitle from "./ListTitle";
+import MoreMenu from "./MoreMenu";
 
 const Bar = ({ openMenu }) => {
   const classes = useStyles();
+  const history = useHistory();
+  const pathname = history.location.pathname;
+
+  const match = useRouteMatch({
+    path: "/:listId",
+    strict: true,
+    sensitive: true,
+  });
+
+  const isExact = match ? match.isExact : false;
+  const listId = isExact ? pathname.slice(1) : null;
+
+  console.log(match, listId);
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -19,28 +34,28 @@ const Bar = ({ openMenu }) => {
           onClick={openMenu}
           className={classes.menuButton}
         >
-          <Menu />
+          <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap>
+        <Typography variant="h6" noWrap className={classes.typography}>
           <Switch>
-            <Route path="/add-task/:listId">Add Task</Route>
-            <Route path="/edit-task/:listId/:taskId">Edit Task</Route>
-            <Route path="/:listId">
+            <Route exact path="/add-task/:listId">
+              Add Task
+            </Route>
+            <Route exact path="/edit-task/:listId/:taskId">
+              Edit Task
+            </Route>
+            <Route exact path="/:listId">
               <ListTitle />
+            </Route>
+            <Route exact path="/">
+              All
             </Route>
           </Switch>
         </Typography>
+        {isExact ? <MoreMenu listId={listId} /> : null}
       </Toolbar>
     </AppBar>
   );
-};
-
-const ListTitle = () => {
-  const { listId } = useParams();
-
-  const { result: list } = useRxDocument("lists", listId);
-
-  return list ? list.name : "Loading";
 };
 
 const drawerWidth = 240;
@@ -57,6 +72,9 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       display: "none",
     },
+  },
+  typography: {
+    flexGrow: 1,
   },
 }));
 

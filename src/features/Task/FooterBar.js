@@ -23,8 +23,6 @@ const FooterBar = ({ handleSubmit, document, subtasks }) => {
   };
 
   const handleDelete = async () => {
-    console.log(subtasks, task_tags);
-
     const promises = R.concat(
       subtasks.map((subtask) => subtask.remove()),
       task_tags.map((task_tag) => task_tag.remove())
@@ -37,10 +35,7 @@ const FooterBar = ({ handleSubmit, document, subtasks }) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
-
     taskId ? EditDocument(data) : AddDocument(data);
-
     redirectToList();
   };
 

@@ -4,7 +4,7 @@ import { useTask, useSubtasks } from "../data/DBHooks";
 import * as R from "ramda";
 
 const EditTask = () => {
-  const [task, isTaskFetching] = useTask();
+  const [task] = useTask();
   const [subtasks, isSubtaskFetching] = useSubtasks();
 
   const isFetching = R.isNil(task) || isSubtaskFetching;

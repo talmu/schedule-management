@@ -2,12 +2,10 @@ import { useRxData, useRxDocument } from "rxdb-hooks";
 import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 
-export const useTodoList = () => {
-  const { listId } = useParams();
-
+export const useTodoList = (id) => {
   const queryConstructor = useCallback(
-    (collection) => collection.find().where("list_id").equals(listId),
-    [listId]
+    (collection) => collection.find().where("list_id").equals(id),
+    [id]
   );
 
   const { result: todoList, isFetching } = useRxData("todos", queryConstructor);
@@ -84,4 +82,10 @@ export const useLists = () => {
   );
 
   return [lists, isFetching];
+};
+
+export const useList = (listId) => {
+  const { result: list, isFetching } = useRxDocument("lists", listId);
+
+  return [list, isFetching];
 };

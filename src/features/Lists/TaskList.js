@@ -4,21 +4,22 @@ import Item from "./Item";
 import { useTodoList } from "../../data/DBHooks";
 import Loading from "../../components/Loading";
 import { makeStyles } from "@material-ui/core/styles";
-import { useStatus } from "../../data/DBHooks";
+import { useParams } from "react-router-dom";
 
-const TaskList = () => {
-  const [todoList, isTodoFetching] = useTodoList();
-  const [status, isStatusFetching] = useStatus();
+const TaskList = ({ list_id }) => {
+  const { listId } = useParams();
+  const id = list_id ? list_id : listId;
+  const [todoList, isTodoFetching] = useTodoList(id);
   const classes = useStyles();
 
-  return isTodoFetching || isStatusFetching ? (
+  return isTodoFetching ? (
     <Loading />
   ) : (
     <div style={{ width: "95%" }}>
       {todoList.length > 0 ? (
-        <List key="todolist" className={classes.list}>
+        <List key={id} className={classes.list}>
           {todoList.map((todo) => {
-            return <Item key={todo.id} todo={todo} status={status} />;
+            return <Item key={todo.id} todo={todo} />;
           })}
         </List>
       ) : (

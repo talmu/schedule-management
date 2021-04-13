@@ -14,7 +14,7 @@ import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import { subscriptionQuery, pushQuery, pullQuery, variable } from "./Queries";
 import { v4 as uuidv4 } from "uuid";
-import { createBrowserHistory } from "history";
+// import { createBrowserHistory } from "history";
 
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBValidatePlugin);
@@ -146,7 +146,7 @@ export const RemoteDbReplication = (db) => {
 export const initializeDB = async () => {
   await removeRxDatabase("todos_rxdb", "idb");
   const db = await createRxDatabase({
-    name: "todos_rxdb",
+    name: "todos_db" + new Date().getTime(),
     adapter: "idb",
   });
 
@@ -192,5 +192,3 @@ export const initializeDB = async () => {
 
   return db;
 };
-
-export const history = createBrowserHistory();

@@ -53,6 +53,7 @@ export const todoSchema = {
   //   "status_id",
   //   "priority_id",
   // ],
+  indexes: ["list_id"],
   additionalProperties: true,
 };
 
