@@ -35,10 +35,7 @@ const FooterBar = ({ handleSubmit, document, subtasks }) => {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
-
     taskId ? EditDocument(data) : AddDocument(data);
-
     redirectToList();
   };
 

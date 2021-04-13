@@ -14,7 +14,7 @@ import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import { subscriptionQuery, pushQuery, pullQuery, variable } from "./Queries";
 import { v4 as uuidv4 } from "uuid";
-import { createBrowserHistory } from "history";
+// import { createBrowserHistory } from "history";
 
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBValidatePlugin);

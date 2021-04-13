@@ -2,12 +2,10 @@ import { ListItemText, List, ListItem, ListItemIcon } from "@material-ui/core";
 import { Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams, useHistory } from "react-router-dom";
-import { ImportContacts } from "@material-ui/icons";
-import { Functions, SortByAlpha, Dvr } from "@material-ui/icons";
+import ListIcon from "@material-ui/icons/List";
 import Loading from "../components/Loading";
 import { useLists } from "../data/DBHooks";
 import AddNewList from "./AddNewList";
-import * as R from "ramda";
 
 const MenuBar = ({ close }) => {
   const classes = useStyles();
@@ -38,10 +36,7 @@ const MenuBar = ({ close }) => {
             onClick={handleClick(list.id)}
           >
             <ListItemIcon>
-              {R.equals(list.name, "Math") ? <Functions /> : ""}
-              {R.equals(list.name, "Hebrew") ? <ImportContacts /> : ""}
-              {R.equals(list.name, "English") ? <SortByAlpha /> : ""}
-              {R.equals(list.name, "Computer") ? <Dvr /> : ""}
+              <ListIcon />
             </ListItemIcon>
             <ListItemText primary={list.name} />
           </ListItem>

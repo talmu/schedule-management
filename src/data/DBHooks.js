@@ -83,3 +83,9 @@ export const useLists = () => {
 
   return [lists, isFetching];
 };
+
+export const useList = (listId) => {
+  const { result: list, isFetching } = useRxDocument("lists", listId);
+
+  return [list, isFetching];
+};

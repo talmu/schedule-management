@@ -1,55 +1,28 @@
-import { useState } from "react";
-import { Typography, Toolbar, IconButton } from "@material-ui/core";
-import { Switch, Route } from "react-router-dom";
+import { Toolbar, IconButton } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useParams } from "react-router-dom";
-import { Menu, Edit, Delete } from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
+import MenuIcon from "@material-ui/icons/Menu";
 import { AppBar } from "@material-ui/core";
-import { useRxDB, useRxDocument } from "rxdb-hooks";
-import DeleteDialog from "./DeleteDialog";
-import Loading from "./Loading";
+import ListTitle from "./ListTitle";
+import MoreMenu from "./MoreMenu";
 
 const Bar = ({ openMenu }) => {
   const classes = useStyles();
-  const db = useRxDB();
-  const params = useParams();
+  const history = useHistory();
+  const pathname = history.location.pathname;
 
-  console.log(params);
-  // console.log(listId);
+  const match = useRouteMatch({
+    path: "/:listId",
+    strict: true,
+    sensitive: true,
+  });
 
-  const [open, setOpen] = useState(false);
+  const isExact = match ? match.isExact : false;
+  const listId = isExact ? pathname.slice(1) : null;
 
-  const handleDeleteClick = () => setOpen(!open);
-
-  const deleteList = async () => {
-    // const query = db.todos.find().where("list_id").equals(listId);
-    // const todos = await query.exec();
-    // todos.map((todo) => deleteTodo(todo));
-  };
-
-  const deleteTodo = async (todo) => {
-    deleteTags(todo);
-    deleteSubtasks(todo);
-    todo.remove();
-  };
-
-  const deleteTags = async (todo) => {
-    const query = db.task_tags.find().where("task_id").equals(todo.id);
-    const task_tags = await query.exec();
-    await Promise.all(task_tags.map((task_tag) => task_tag.remove()));
-  };
-
-  const deleteSubtasks = async (todo) => {
-    const query = db.subtasks.find().where("task_id").equals(todo.id);
-    const subtasks = await query.exec();
-    await Promise.all(subtasks.map((subtask) => subtask.remove()));
-  };
-
-  const ListTitle = () => {
-    const { listId } = useParams();
-    const { result: list } = useRxDocument("lists", listId);
-    return list ? list.name : "Loading";
-  };
+  console.log(match, listId);
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -61,7 +34,7 @@ const Bar = ({ openMenu }) => {
           onClick={openMenu}
           className={classes.menuButton}
         >
-          <Menu />
+          <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap className={classes.typography}>
           <Switch>
@@ -79,21 +52,7 @@ const Bar = ({ openMenu }) => {
             </Route>
           </Switch>
         </Typography>
-        <IconButton
-          color="inherit"
-          aria-label="delete list"
-          onClick={handleDeleteClick}
-        >
-          <Delete />
-        </IconButton>
-        <DeleteDialog
-          open={open}
-          handleDeleteClick={handleDeleteClick}
-          deleteFunc={deleteList}
-        />
-        <IconButton color="inherit" aria-label="edit list">
-          <Edit />
-        </IconButton>
+        {isExact ? <MoreMenu listId={listId} /> : null}
       </Toolbar>
     </AppBar>
   );
