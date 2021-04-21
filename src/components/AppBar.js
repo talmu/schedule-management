@@ -5,7 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import MenuIcon from "@material-ui/icons/Menu";
 import { AppBar } from "@material-ui/core";
-import ListTitle from "./ListTitle";
+import { useRxDocument } from "rxdb-hooks";
+import { useParams } from "react-router-dom";
 import MoreMenu from "./MoreMenu";
 
 const Bar = ({ openMenu }) => {
@@ -14,15 +15,20 @@ const Bar = ({ openMenu }) => {
   const pathname = history.location.pathname;
 
   const match = useRouteMatch({
-    path: "/:listId",
+    path: "/list/:listId",
     strict: true,
     sensitive: true,
   });
 
   const isExact = match ? match.isExact : false;
-  const listId = isExact ? pathname.slice(1) : null;
+  const listId = isExact ? pathname.slice(6) : null;
 
-  console.log(match, listId);
+  const ListTitle = () => {
+    const { listId } = useParams();
+    const { result: list } = useRxDocument("lists", listId);
+
+    return list ? list.name : "";
+  };
 
   return (
     <AppBar position="fixed" className={classes.appBar}>
@@ -38,17 +44,23 @@ const Bar = ({ openMenu }) => {
         </IconButton>
         <Typography variant="h6" noWrap className={classes.typography}>
           <Switch>
-            <Route exact path="/add-task/:listId">
+            <Route exact path="/list/add-list">
+              Add List
+            </Route>
+            <Route exact path="/tag/tasks-tag/:tagId">
+              Tasks Tag
+            </Route>
+            <Route exact path="/task/add-task/:listId">
               Add Task
             </Route>
-            <Route exact path="/edit-task/:listId/:taskId">
+            <Route exact path="/task/edit-task/:listId/:taskId">
               Edit Task
             </Route>
-            <Route exact path="/:listId">
+            <Route exact path="/list/:listId">
               <ListTitle />
             </Route>
             <Route exact path="/">
-              All
+              My Tasks
             </Route>
           </Switch>
         </Typography>

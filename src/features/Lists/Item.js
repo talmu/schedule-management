@@ -3,10 +3,9 @@ import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { Edit } from "@material-ui/icons";
 import ItemTags from "./ItemTags";
-import { useParams, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 const Item = ({ todo }) => {
-  const { listId } = useParams();
   const history = useHistory();
 
   const handleCheck = async (event) => {
@@ -16,7 +15,7 @@ const Item = ({ todo }) => {
     await todo.atomicPatch({ status_id: newStatus });
   };
 
-  const labelId = `checkbox-list-label-${todo.name}`;
+  // const labelId = `checkbox-list-label-${todo.name}`;
 
   return (
     <div>
@@ -26,15 +25,17 @@ const Item = ({ todo }) => {
             edge="start"
             checked={todo.status_id === "252770a1-26d9-43df-b15a-fafcdc36149a"}
             color="primary"
-            inputProps={{ "aria-labelledby": labelId }}
+            // inputProps={{ "aria-labelledby": labelId }}
             onChange={handleCheck}
           />
         </ListItemIcon>
-        <ListItemText id={labelId} primary={todo.name}></ListItemText>
+        <ListItemText primary={todo.name}></ListItemText>
         <ListItemSecondaryAction>
           <IconButton
             edge="end"
-            onClick={() => history.push(`/edit-task/${listId}/${todo.id}`)}
+            onClick={() =>
+              history.push(`/task/edit-task/${todo.list_id}/${todo.id}`)
+            }
           >
             <Edit />
           </IconButton>
