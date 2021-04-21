@@ -19,7 +19,7 @@ const FooterBar = ({ handleSubmit, document, subtasks }) => {
   const taskTagsCollection = useRxCollection("task_tags");
 
   const redirectToList = () => {
-    history.push(`/${listId}`);
+    history.push(`/list/${listId}`);
   };
 
   const handleDelete = async () => {

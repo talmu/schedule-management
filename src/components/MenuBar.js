@@ -1,61 +1,29 @@
-import { ListItemText, List, ListItem, ListItemIcon } from "@material-ui/core";
-import { Divider } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { useParams, useHistory } from "react-router-dom";
-import ListIcon from "@material-ui/icons/List";
 import Loading from "../components/Loading";
-import { useLists } from "../data/DBHooks";
-import AddNewList from "./AddNewList";
+import TagsList from "../features/Tags/TagsList";
+import { useTags, useLists } from "../data/DBHooks";
+import Lists from "../features/Lists/Lists";
+import { makeStyles } from "@material-ui/core/styles";
+import { Divider } from "@material-ui/core";
 
 const MenuBar = ({ close }) => {
+  const [tags, isTagsFetching] = useTags();
+  const [lists, isListsFetching] = useLists();
   const classes = useStyles();
-  const { listId } = useParams();
-  const history = useHistory();
 
-  const [lists, isFetching] = useLists();
-
-  const handleClick = (list_id) => () => {
-    history.push(`/${list_id}`);
-    close();
-  };
-
-  return isFetching ? (
+  return isTagsFetching || isListsFetching ? (
     <Loading />
   ) : (
     <div>
-      <div className={classes.toolbar}>
-        <AddNewList />
-      </div>
+      <div className={classes.toolbar}></div>
       <Divider />
-      <List>
-        {lists.map((list) => (
-          <ListItem
-            button
-            key={list.id}
-            selected={list.id === listId}
-            onClick={handleClick(list.id)}
-          >
-            <ListItemIcon>
-              <ListIcon />
-            </ListItemIcon>
-            <ListItemText primary={list.name} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
+      <Lists close={close} lists={lists} />
+      <TagsList close={close} tags={tags} />
     </div>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
-  iconButton: {
-    padding: 10,
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1,
-  },
 }));
 
 export default MenuBar;

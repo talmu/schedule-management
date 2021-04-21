@@ -76,6 +76,20 @@ export const useTags = () => {
   return [tags, isFetching];
 };
 
+export const useTasksTag = (tag_id) => {
+  const queryConstructor = useCallback(
+    (collection) => collection.find().where("tag_id").equals(tag_id),
+    [tag_id]
+  );
+
+  const { result: tasks_tag, isFetching } = useRxData(
+    "task_tags",
+    queryConstructor
+  );
+
+  return [tasks_tag, isFetching];
+};
+
 export const useLists = () => {
   const { result: lists, isFetching } = useRxData("lists", (collection) =>
     collection.find()
