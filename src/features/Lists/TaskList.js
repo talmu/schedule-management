@@ -42,7 +42,7 @@ const TaskList = ({ list_id }) => {
 const useStyles = makeStyles((theme) => ({
   list: {
     marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(2),
+    // marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
   },
   emptyPage: {
@@ -55,12 +55,12 @@ const useStyles = makeStyles((theme) => ({
     color: "lightgrey",
   },
   emptyList: {
-    fontSize: theme.typography.pxToRem(20),
+    fontSize: theme.typography.pxToRem(15),
     color: "lightgrey",
     display: "flex",
     justifyContent: "center",
     flexWrap: "wrap",
-    padding: "20px",
+    padding: "5px",
   },
 }));
 

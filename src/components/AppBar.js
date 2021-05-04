@@ -2,7 +2,6 @@ import { Toolbar, IconButton } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useHistory } from "react-router-dom";
 import MenuIcon from "@material-ui/icons/Menu";
 import { AppBar } from "@material-ui/core";
 import { useRxDocument } from "rxdb-hooks";
@@ -11,23 +10,28 @@ import MoreMenu from "./MoreMenu";
 
 const Bar = ({ openMenu }) => {
   const classes = useStyles();
-  const history = useHistory();
-  const pathname = history.location.pathname;
 
-  const match = useRouteMatch({
-    path: "/list/:listId",
-    strict: true,
-    sensitive: true,
-  });
+  const matchList = useRouteMatch({ path: "/list/:listId", exact: true });
+  const matchTag = useRouteMatch("/tag/:tagId");
 
-  const isExact = match ? match.isExact : false;
-  const listId = isExact ? pathname.slice(6) : null;
+  const isListPage = matchList ? matchList.isExact : false;
+  const listId = isListPage ? matchList.params.listId : null;
+
+  const isTagPage = matchTag ? matchTag.isExact : false;
+  const tagId = isTagPage ? matchTag.params.tagId : null;
 
   const ListTitle = () => {
     const { listId } = useParams();
     const { result: list } = useRxDocument("lists", listId);
 
     return list ? list.name : "";
+  };
+
+  const TagTitle = () => {
+    const { tagId } = useParams();
+    const { result: tag } = useRxDocument("tags", tagId);
+
+    return tag ? tag.text : "";
   };
 
   return (
@@ -44,27 +48,43 @@ const Bar = ({ openMenu }) => {
         </IconButton>
         <Typography variant="h6" noWrap className={classes.typography}>
           <Switch>
-            <Route exact path="/list/add-list">
-              Add List
-            </Route>
-            <Route exact path="/tag/tasks-tag/:tagId">
-              Tasks Tag
-            </Route>
-            <Route exact path="/task/add-task/:listId">
-              Add Task
-            </Route>
-            <Route exact path="/task/edit-task/:listId/:taskId">
-              Edit Task
+            <Route exact path="/">
+              My Tasks
             </Route>
             <Route exact path="/list/:listId">
               <ListTitle />
             </Route>
-            <Route exact path="/">
-              My Tasks
+            <Route exact path="/add-list">
+              Add List
+            </Route>
+            <Route exact path="/edit-list/:listId">
+              Edit List
+            </Route>
+            <Route exact path="/delete-list/:listId">
+              Delete List
+            </Route>
+            <Route exact path="/add-task/:listId">
+              Add Task
+            </Route>
+            <Route exact path="/edit-task/:listId/:taskId">
+              Edit Task
+            </Route>
+            <Route exact path="/tag/:tagId">
+              <TagTitle />
+            </Route>
+            <Route exact path="/add-tag">
+              Add Tag
+            </Route>
+            <Route exact path="/edit-tag/:tagId">
+              Edit Tag
+            </Route>
+            <Route exact path="/delete-tag/:tagId">
+              Delete Tag
             </Route>
           </Switch>
         </Typography>
-        {isExact ? <MoreMenu listId={listId} /> : null}
+        {isListPage ? <MoreMenu obj={"List"} id={listId} /> : null}
+        {isTagPage ? <MoreMenu obj={"Tag"} id={tagId} /> : null}
       </Toolbar>
     </AppBar>
   );

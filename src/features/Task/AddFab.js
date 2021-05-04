@@ -15,7 +15,7 @@ const AddFab = () => {
       aria-label="add"
       className={classes.fab}
       onClick={() => {
-        history.push(`/task/add-task/${listId}`);
+        history.push(`/add-task/${listId}`);
       }}
     >
       <Add />

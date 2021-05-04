@@ -34,7 +34,7 @@ const Item = ({ todo }) => {
           <IconButton
             edge="end"
             onClick={() =>
-              history.push(`/task/edit-task/${todo.list_id}/${todo.id}`)
+              history.push(`/edit-task/${todo.list_id}/${todo.id}`)
             }
           >
             <Edit />
