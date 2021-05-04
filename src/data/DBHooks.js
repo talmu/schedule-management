@@ -99,7 +99,13 @@ export const useLists = () => {
 };
 
 export const useList = (listId) => {
-  const { result: list, isFetching } = useRxDocument("lists", listId);
+  const { result: list } = useRxDocument("lists", listId);
 
-  return [list, isFetching];
+  return list;
+};
+
+export const useTag = (tagId) => {
+  const { result: tag } = useRxDocument("tags", tagId);
+
+  return tag;
 };

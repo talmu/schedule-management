@@ -1,26 +1,29 @@
 import { TextField } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useRxCollection } from "rxdb-hooks";
-import { v4 as uuidv4 } from "uuid";
+import { useTag } from "../data/DBHooks";
 import BasicToolbar from "../components/BasicToolbar";
+import { useEffect, useState } from "react";
 
-import { useState } from "react";
-
-const AddListPage = () => {
+const EditTagPage = () => {
   const classes = useStyles();
 
-  const [listName, setListName] = useState("");
+  const [tagName, setTagName] = useState("");
   const [error, setError] = useState(false);
-  const listCollection = useRxCollection("lists");
   const history = useHistory();
+  const { tagId } = useParams();
+  const tag = useTag(tagId);
 
-  const redirectToMain = () => history.push("/");
+  useEffect(() => {
+    if (tag) setTagName(tag.text);
+  }, [tag]);
 
-  const handleAdd = async () => {
-    if (listName) {
-      await listCollection.atomicUpsert({ id: uuidv4(), name: listName });
-      redirectToMain();
+  const redirectToTags = () => history.push(`/tag/${tagId}`);
+
+  const handleSave = async () => {
+    if (tagName) {
+      await tag.atomicPatch({ text: tagName });
+      redirectToTags();
     } else setError(!error);
   };
 
@@ -28,19 +31,19 @@ const AddListPage = () => {
     if (error && e.target.value) {
       setError(false);
     } else if (!e.target.value) setError(true);
-    setListName(e.target.value);
+    setTagName(e.target.value);
   };
 
   return (
     <div>
       <TextField
-        id="listName"
+        id="tagName"
         className={classes.margin}
-        label="List Name"
+        label="Tag Name"
         style={{ width: "90%" }}
         helperText={error ? "List Name Can't be empty." : ""}
         fullWidth
-        value={listName}
+        value={tagName}
         onChange={handleChange}
         error={error}
         InputLabelProps={{
@@ -48,7 +51,7 @@ const AddListPage = () => {
         }}
       />
 
-      <BasicToolbar handleOk={handleAdd} redirect={redirectToMain} />
+      <BasicToolbar handleOk={handleSave} redirect={redirectToTags} />
     </div>
   );
 };
@@ -60,4 +63,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default AddListPage;
+export default EditTagPage;

@@ -4,7 +4,7 @@ import { AccordionSummary, AccordionDetails } from "@material-ui/core";
 import { Typography, Accordion } from "@material-ui/core";
 import { ExpandMore } from "@material-ui/icons";
 import { useState } from "react";
-
+import AddTag from "./AddTag";
 const TagsList = ({ close, tags }) => {
   const [expanded, setExpanded] = useState(true);
 
@@ -25,6 +25,7 @@ const TagsList = ({ close, tags }) => {
           {tags.map((tag) => {
             return <TagItem key={tag.id} close={close} tag={tag} />;
           })}
+          <AddTag close={close} />
         </List>
       </AccordionDetails>
     </Accordion>

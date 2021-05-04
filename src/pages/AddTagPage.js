@@ -7,19 +7,19 @@ import BasicToolbar from "../components/BasicToolbar";
 
 import { useState } from "react";
 
-const AddListPage = () => {
+const AddTagPage = () => {
   const classes = useStyles();
 
-  const [listName, setListName] = useState("");
+  const [tagName, setTagName] = useState("");
   const [error, setError] = useState(false);
-  const listCollection = useRxCollection("lists");
+  const tagsCollection = useRxCollection("tags");
   const history = useHistory();
 
   const redirectToMain = () => history.push("/");
 
   const handleAdd = async () => {
-    if (listName) {
-      await listCollection.atomicUpsert({ id: uuidv4(), name: listName });
+    if (tagName) {
+      await tagsCollection.atomicUpsert({ id: uuidv4(), text: tagName });
       redirectToMain();
     } else setError(!error);
   };
@@ -28,19 +28,19 @@ const AddListPage = () => {
     if (error && e.target.value) {
       setError(false);
     } else if (!e.target.value) setError(true);
-    setListName(e.target.value);
+    setTagName(e.target.value);
   };
 
   return (
     <div>
       <TextField
-        id="listName"
+        id="tagName"
         className={classes.margin}
-        label="List Name"
+        label="Tag Name"
         style={{ width: "90%" }}
-        helperText={error ? "List Name Can't be empty." : ""}
+        helperText={error ? "Tag Name Can't be empty." : ""}
         fullWidth
-        value={listName}
+        value={tagName}
         onChange={handleChange}
         error={error}
         InputLabelProps={{
@@ -60,4 +60,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default AddListPage;
+export default AddTagPage;

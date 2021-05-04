@@ -1,6 +1,6 @@
 import { useTasksTag } from "../data/DBHooks";
 import Loading from "../components/Loading";
-import { List } from "@material-ui/core";
+import { List, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Item from "../features/Lists/Item";
 import { useParams } from "react-router-dom";
@@ -24,15 +24,14 @@ const TasksTag = () => {
     <div style={{ width: "95%" }}>
       {tasks.length > 0 ? (
         <List className={classes.list}>
-          {tasks.map((task) => {
-            console.log(task.name);
-            return <Item key={task.id} todo={task} />;
-          })}
+          {tasks.map((task) => (
+            <Item key={task.id} todo={task} />
+          ))}
         </List>
       ) : (
-        <div className={classes.container}>
-          <div className={classes.item}>There is no tasks under this tag</div>
-        </div>
+        <Typography style={{ width: "90%" }} className={classes.emptyPage}>
+          No Tasks
+        </Typography>
       )}
     </div>
   );
@@ -44,16 +43,15 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  container: {
+  emptyPage: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     height: "50vh",
     width: "100vw",
-  },
-  item: {
+    fontSize: theme.typography.pxToRem(30),
     color: "lightgrey",
-    fontSize: 25,
+    marginLeft: theme.spacing(2),
   },
 }));
 

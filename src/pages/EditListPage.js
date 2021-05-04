@@ -1,26 +1,28 @@
 import { TextField } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { useRxCollection } from "rxdb-hooks";
-import { v4 as uuidv4 } from "uuid";
+import { useList } from "../data/DBHooks";
 import BasicToolbar from "../components/BasicToolbar";
+import { useEffect, useState } from "react";
 
-import { useState } from "react";
-
-const AddListPage = () => {
+const EditListPage = () => {
   const classes = useStyles();
-
+  const { listId } = useParams();
+  const list = useList(listId);
   const [listName, setListName] = useState("");
   const [error, setError] = useState(false);
-  const listCollection = useRxCollection("lists");
   const history = useHistory();
 
-  const redirectToMain = () => history.push("/");
+  useEffect(() => {
+    if (list) setListName(list.name);
+  }, [list]);
 
-  const handleAdd = async () => {
+  const redirectToList = () => history.push(`/list/${listId}`);
+
+  const handleSave = async () => {
     if (listName) {
-      await listCollection.atomicUpsert({ id: uuidv4(), name: listName });
-      redirectToMain();
+      await list.atomicPatch({ name: listName });
+      redirectToList();
     } else setError(!error);
   };
 
@@ -48,7 +50,7 @@ const AddListPage = () => {
         }}
       />
 
-      <BasicToolbar handleOk={handleAdd} redirect={redirectToMain} />
+      <BasicToolbar handleOk={handleSave} redirect={redirectToList} />
     </div>
   );
 };
@@ -60,4 +62,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default AddListPage;
+export default EditListPage;
