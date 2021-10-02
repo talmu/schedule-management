@@ -34,6 +34,12 @@ const Bar = ({ openMenu }) => {
     return tag ? tag.text : "";
   };
 
+  const FilterTitle = () => {
+    const { filtername } = useParams();
+
+    return filtername;
+  };
+
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
@@ -80,6 +86,12 @@ const Bar = ({ openMenu }) => {
             </Route>
             <Route exact path="/delete-tag/:tagId">
               Delete Tag
+            </Route>
+            <Route exact path="/add-filter">
+              Create New Filter
+            </Route>
+            <Route exact path="/filter/:filtername">
+              <FilterTitle />
             </Route>
           </Switch>
         </Typography>

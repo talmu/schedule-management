@@ -2,6 +2,7 @@ import Loading from "../components/Loading";
 import TagsList from "../features/Tags/TagsList";
 import { useTags, useLists } from "../data/DBHooks";
 import Lists from "../features/Lists/Lists";
+import FiltersList from "../features/Filters/FiltersList";
 import { makeStyles } from "@material-ui/core/styles";
 import { Divider } from "@material-ui/core";
 
@@ -16,6 +17,7 @@ const MenuBar = ({ close }) => {
     <div>
       <div className={classes.toolbar}></div>
       <Divider />
+      <FiltersList close={close} />
       <Lists close={close} lists={lists} />
       <TagsList close={close} tags={tags} />
     </div>

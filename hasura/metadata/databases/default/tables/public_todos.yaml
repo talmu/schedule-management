@@ -1,0 +1,28 @@
+table:
+  name: todos
+  schema: public
+object_relationships:
+- name: list
+  using:
+    foreign_key_constraint_on: list_id
+- name: priority
+  using:
+    foreign_key_constraint_on: priority_id
+- name: status
+  using:
+    foreign_key_constraint_on: status_id
+array_relationships:
+- name: subtasks
+  using:
+    foreign_key_constraint_on:
+      column: task_id
+      table:
+        name: subtasks
+        schema: public
+- name: task_tags
+  using:
+    foreign_key_constraint_on:
+      column: task_id
+      table:
+        name: task_tags
+        schema: public

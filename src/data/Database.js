@@ -22,6 +22,7 @@ addRxPlugin(RxDBReplicationGraphQLPlugin);
 addRxPlugin(require("pouchdb-adapter-idb"));
 
 const syncURL = "http://localhost:8080/v1/graphql";
+// const syncURL = "http://192.168.1.194/v1/graphql";
 
 const batchSize = 10;
 
@@ -75,6 +76,8 @@ const setupGraphQLReplication = async (db, collection) => {
 
 const setupGraphQLSubscription = (replicationState, collection) => {
   const endpointURL = "ws://localhost:8080/v1/graphql";
+  // const endpointURL = "ws://192.168.1.194:8080/v1/graphql";
+
   const wsClient = new SubscriptionClient(endpointURL, {
     reconnect: true,
     connectionParams: {

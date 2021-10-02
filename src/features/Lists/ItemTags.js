@@ -57,7 +57,7 @@ const ItemTags = ({ todo }) => {
 
 const useStyles = makeStyles((theme) => ({
   grid: {
-    marginLeft: theme.spacing(6),
+    marginLeft: theme.spacing(8),
     marginBottom: theme.spacing(1),
   },
 }));

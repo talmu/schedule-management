@@ -1,0 +1,8 @@
+- "!include public_lists.yaml"
+- "!include public_priority.yaml"
+- "!include public_status.yaml"
+- "!include public_subtasks.yaml"
+- "!include public_tags.yaml"
+- "!include public_task_tags.yaml"
+- "!include public_todos.yaml"
+- "!include public_users.yaml"
