@@ -75,7 +75,7 @@ const setupGraphQLReplication = async (db, collection) => {
 };
 
 const setupGraphQLSubscription = (replicationState, collection) => {
-  const endpointURL = "ws://schedule-management.hasura.app/v1/graphql";
+  const endpointURL = "wss://schedule-management.hasura.app/v1/graphql";
   // const endpointURL = "ws://192.168.1.194:8080/v1/graphql";
 
   const wsClient = new SubscriptionClient(endpointURL, {
