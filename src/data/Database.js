@@ -55,6 +55,10 @@ const pushQueryBuilder = (collection) => (doc) => {
 const setupGraphQLReplication = async (db, collection) => {
   const replicationState = db[collection].syncGraphQL({
     url: syncURL,
+    headers: {
+      "x-hasura-admin-secret":
+        "mDX7jNBEy9r8A61Mcics5t65Qci2YtWfR2mTcFHkAXlKCrRBnhantHSiilTEY5e5",
+    },
     push: {
       batchSize,
       queryBuilder: pushQueryBuilder(collection),
@@ -81,7 +85,10 @@ const setupGraphQLSubscription = (replicationState, collection) => {
   const wsClient = new SubscriptionClient(endpointURL, {
     reconnect: true,
     connectionParams: {
-      headers: {},
+      headers: {
+        "x-hasura-admin-secret":
+          "mDX7jNBEy9r8A61Mcics5t65Qci2YtWfR2mTcFHkAXlKCrRBnhantHSiilTEY5e5",
+      },
     },
     timeout: 1000 * 60,
     onConnect: () => {
