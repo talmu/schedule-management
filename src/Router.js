@@ -10,6 +10,8 @@ import EditListPage from "./pages/EditListPage";
 import EditTagPage from "./pages/EditTagPage";
 import DeleteListPage from "./pages/DeleteListPage";
 import DeleteTagPage from "./pages/DeleteTagPage";
+import AddFilterPage from "./pages/AddFilterPage";
+import FilteredListPage from "./pages/FilteredListPage";
 
 const Router = () => {
   return (
@@ -46,6 +48,14 @@ const Router = () => {
       </Route>
       <Route exact path="/delete-tag/:tagId">
         <DeleteTagPage />
+      </Route>
+      <Route
+        exact
+        path="/filter/:filtername"
+        component={(props) => <FilteredListPage {...props} />}
+      />
+      <Route exact path="/add-filter">
+        <AddFilterPage />
       </Route>
     </Switch>
   );

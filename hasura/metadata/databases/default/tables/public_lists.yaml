@@ -1,0 +1,11 @@
+table:
+  name: lists
+  schema: public
+array_relationships:
+- name: todos
+  using:
+    foreign_key_constraint_on:
+      column: list_id
+      table:
+        name: todos
+        schema: public
