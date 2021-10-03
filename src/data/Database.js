@@ -14,7 +14,6 @@ import { RxDBReplicationGraphQLPlugin } from "rxdb/plugins/replication-graphql";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import { subscriptionQuery, pushQuery, pullQuery, variable } from "./Queries";
 import { v4 as uuidv4 } from "uuid";
-// import { createBrowserHistory } from "history";
 
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBValidatePlugin);
@@ -22,7 +21,6 @@ addRxPlugin(RxDBReplicationGraphQLPlugin);
 addRxPlugin(require("pouchdb-adapter-idb"));
 
 const syncURL = "https://schedule-management.hasura.app/v1/graphql";
-// const syncURL = "http://192.168.1.194/v1/graphql";
 
 const batchSize = 10;
 
@@ -80,7 +78,6 @@ const setupGraphQLReplication = async (db, collection) => {
 
 const setupGraphQLSubscription = (replicationState, collection) => {
   const endpointURL = "wss://schedule-management.hasura.app/v1/graphql";
-  // const endpointURL = "ws://192.168.1.194:8080/v1/graphql";
 
   const wsClient = new SubscriptionClient(endpointURL, {
     reconnect: true,
