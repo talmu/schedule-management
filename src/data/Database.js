@@ -55,7 +55,7 @@ const setupGraphQLReplication = async (db, collection) => {
     url: syncURL,
     headers: {
       "x-hasura-admin-secret":
-        "mDX7jNBEy9r8A61Mcics5t65Qci2YtWfR2mTcFHkAXlKCrRBnhantHSiilTEY5e5",
+        process.env.SECRECT_KEY,
     },
     push: {
       batchSize,
@@ -84,7 +84,7 @@ const setupGraphQLSubscription = (replicationState, collection) => {
     connectionParams: {
       headers: {
         "x-hasura-admin-secret":
-          "mDX7jNBEy9r8A61Mcics5t65Qci2YtWfR2mTcFHkAXlKCrRBnhantHSiilTEY5e5",
+          process.env.SECRECT_KEY2,
       },
     },
     timeout: 1000 * 60,
